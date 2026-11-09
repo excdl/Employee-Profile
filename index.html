@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <!-- 功能選單區塊（模擬左側/上方快捷按鈕清單） -->
+        <!-- 功能選單區塊 -->
         <div class="mb-6">
             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">功能選單</h3>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -136,7 +136,7 @@
         </div>
     </main>
 
-    <!-- 員工詳細資料與編輯 Modal -->
+    <!-- 員工詳細資料與編輯 Modal（完整 28 欄位） -->
     <div id="detailModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -147,7 +147,7 @@
             <form id="editEmployeeForm" onsubmit="submitEditEmployee(event)">
                 <input type="hidden" id="editRowIndex" name="rowIndex">
                 <div id="modalContent" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                    <!-- 動態載入 28 欄位或編輯表單 -->
+                    <!-- 動態載入完整 28 欄位或編輯表單 -->
                 </div>
                 <div id="modalActions" class="flex justify-between items-center mt-6 border-t pt-4">
                     <div>
@@ -194,91 +194,60 @@
         </div>
     </div>
 
-    <!-- 新增員工表單 Modal -->
+    <!-- 新增員工表單 Modal（精簡 10 欄位） -->
     <div id="addModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-lg font-bold text-slate-900">新增完整人事資料（共 28 欄位）</h3>
+                <h3 class="text-lg font-bold text-slate-900">新增保全人員資料</h3>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
             </div>
-            <form id="addEmployeeForm" onsubmit="submitNewEmployee(event)" class="space-y-4 text-sm">
-                <!-- 1. 基本資料區塊 -->
+            <form id="addEmployeeForm" onsubmit="submitNewEmployee(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
-                    <h4 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2 border-b pb-1">基本與派駐資料</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div><label class="block text-xs font-semibold text-slate-600">服務單位 *</label><input type="text" name="服務單位" required class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">姓名 *</label><input type="text" name="姓名" required class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">目前派駐案場</label><input type="text" name="目前派駐案場" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">職稱</label><input type="text" name="職稱" value="保全人員" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">入職日期</label><input type="date" name="入職日期" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600">在職狀態</label>
-                            <select name="在職狀態" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="在職" selected>在職</option><option value="離職">離職</option></select>
-                        </div>
-                        <div><label class="block text-xs font-semibold text-slate-600">離職日期</label><input type="date" name="離職日期" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">聯絡電話</label><input type="tel" name="聯絡電話" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">出生年月日</label><input type="date" name="出生年月日" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div class="sm:col-span-3"><label class="block text-xs font-semibold text-slate-600">通訊地址</label><input type="text" name="通訊地址" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                    </div>
+                    <label class="block text-xs font-semibold text-slate-600">服務單位 *</label>
+                    <input type="text" name="服務單位" required class="w-full mt-1 border border-slate-300 rounded-lg p-2">
                 </div>
-
-                <!-- 2. 薪資與投保區塊 -->
                 <div>
-                    <h4 class="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-2 border-b pb-1">薪資與勞健保投保</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                        <div><label class="block text-xs font-semibold text-slate-600">約定薪資</label><input type="number" name="約定薪資" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600">薪資別</label>
-                            <select name="薪資別" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="月薪">月薪</option><option value="日薪">日薪</option><option value="時薪">時薪</option></select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600">投保勞健保</label>
-                            <select name="投保勞健保" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="是">是</option><option value="否">否</option></select>
-                        </div>
-                        <div><label class="block text-xs font-semibold text-slate-600">勞健保級距</label><input type="number" name="勞健保級距" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">健保眷屬人數</label><input type="number" name="健保眷屬人數" value="0" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600">投保團保</label>
-                            <select name="投保團保" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="是">是</option><option value="否">否</option></select>
-                        </div>
-                        <div><label class="block text-xs font-semibold text-slate-600">報稅</label><input type="text" name="報稅" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                    </div>
+                    <label class="block text-xs font-semibold text-slate-600">姓名 *</label>
+                    <input type="text" name="姓名" required class="w-full mt-1 border border-slate-300 rounded-lg p-2">
                 </div>
-
-                <!-- 3. 身分與安調機密區塊 -->
                 <div>
-                    <h4 class="text-xs font-bold text-amber-600 uppercase tracking-wider mb-2 border-b pb-1">身分證、安調與特殊身分</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                        <div><label class="block text-xs font-semibold text-slate-600">身分證字號</label><input type="text" name="身分證字號" class="w-full mt-1 border border-slate-300 rounded-lg p-2 uppercase"></div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600">是否有做安調</label>
-                            <select name="是否有做安調" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="是">是</option><option value="否">否</option></select>
-                        </div>
-                        <div><label class="block text-xs font-semibold text-slate-600">安調狀態</label><input type="text" name="安調" class="w-full mt-1 border border-slate-300 rounded-lg p-2" placeholder="通過/未通過..."></div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600">低收入戶身分</label>
-                            <select name="低收入戶身分" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="否">否</option><option value="是">是</option></select>
-                        </div>
-                        <div><label class="block text-xs font-semibold text-slate-600">法院扣薪(法扣)</label><input type="text" name="法院扣薪(法扣)" value="無" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div class="sm:col-span-3"><label class="block text-xs font-semibold text-slate-600">前科紀錄</label><input type="text" name="前科紀錄" value="無" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                    </div>
+                    <label class="block text-xs font-semibold text-slate-600">目前派駐案場</label>
+                    <input type="text" name="目前派駐案場" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
                 </div>
-
-                <!-- 4. 緊急聯絡人與備註區塊 -->
                 <div>
-                    <h4 class="text-xs font-bold text-rose-600 uppercase tracking-wider mb-2 border-b pb-1">緊急聯絡人與備註</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div><label class="block text-xs font-semibold text-slate-600">緊急聯絡人</label><input type="text" name="緊急聯絡人" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">關係</label><input type="text" name="關係" class="w-full mt-1 border border-slate-300 rounded-lg p-2" placeholder="配偶、父母..."></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">緊急聯絡人電話</label><input type="tel" name="緊急聯絡人電話" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">備註</label><input type="text" name="備註" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div class="sm:col-span-2"><label class="block text-xs font-semibold text-slate-600">其它</label><input type="text" name="其它" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                    </div>
+                    <label class="block text-xs font-semibold text-slate-600">職稱</label>
+                    <input type="text" name="職稱" value="保全人員" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
                 </div>
-
-                <div class="flex justify-end gap-3 mt-6 border-t pt-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">入職日期</label>
+                    <input type="date" name="入職日期" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">約定薪資</label>
+                    <input type="number" name="約定薪資" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">勞健保級距</label>
+                    <input type="number" name="勞健保級距" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">聯絡電話</label>
+                    <input type="tel" name="聯絡電話" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">身分證字號</label>
+                    <input type="text" name="身分證字號" class="w-full mt-1 border border-slate-300 rounded-lg p-2 uppercase">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">在職狀態</label>
+                    <select name="在職狀態" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                        <option value="在職" selected>在職</option>
+                        <option value="離職">離職</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-2 flex justify-end gap-3 mt-4 border-t pt-3">
                     <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50">取消</button>
-                    <button type="submit" id="saveBtn" class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">確認寫入 Google Sheets</button>
+                    <button type="submit" id="saveBtn" class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">確認儲存</button>
                 </div>
             </form>
         </div>
@@ -286,10 +255,11 @@
 
     <!-- JavaScript 邏輯 -->
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbx_uF58vrn1muNdcHoFv6ILqCyziNRRukI5oG2vjrBPnxBkyW9uKa_EH9gF_6Qx_7eZSg/exec"; // 請替換為您的 GAS 部署網址
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyqbBIoRK6kKKg77hxu7ZqTNanEhcLJsH0zHyYhqGjuyO8tbs81Jaslzsp0kP-MmUE9OQ/exec"; // 請替換為您的 GAS 部署網址
         let allEmployees = [];
         let currentEditingEmp = null;
 
+        // 28 個完整欄位設定，用於詳細資料與編輯
         const fieldConfigs = [
             { label: "服務單位", key: "服務單位" },
             { label: "姓名", key: "姓名" },
@@ -583,7 +553,7 @@
                 alert("伺服器連線異常，請稍後再試。");
             } finally {
                 btn.disabled = false;
-                btn.innerText = "確認寫入 Google Sheets";
+                btn.innerText = "確認儲存";
             }
         }
     </script>
