@@ -24,35 +24,28 @@
 
     <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         
-        <!-- 統計摘要卡片 -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 sm:mb-6">
-            <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+        <!-- 統計摘要卡片（改為 3 個並排） -->
+        <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+            <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] text-slate-500 font-medium">總員工數</p>
-                    <p id="statTotal" class="text-xl sm:text-2xl font-bold text-slate-800">0</p>
+                    <p class="text-[10px] sm:text-xs text-slate-500 font-medium">總員工數</p>
+                    <p id="statTotal" class="text-lg sm:text-2xl font-bold text-slate-800">0</p>
                 </div>
-                <div class="p-2.5 bg-blue-50 text-blue-600 rounded-lg text-sm">👥</div>
+                <div class="hidden sm:flex p-2.5 bg-blue-50 text-blue-600 rounded-lg text-sm">👥</div>
             </div>
-            <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+            <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] text-slate-500 font-medium">線上在職</p>
-                    <p id="statActive" class="text-xl sm:text-2xl font-bold text-emerald-600">0</p>
+                    <p class="text-[10px] sm:text-xs text-slate-500 font-medium">線上在職</p>
+                    <p id="statActive" class="text-lg sm:text-2xl font-bold text-emerald-600">0</p>
                 </div>
-                <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-lg text-sm">✅</div>
+                <div class="hidden sm:flex p-2.5 bg-emerald-50 text-emerald-600 rounded-lg text-sm">✅</div>
             </div>
-            <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+            <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] text-slate-500 font-medium">派駐案場數</p>
-                    <p id="statSites" class="text-xl sm:text-2xl font-bold text-indigo-600">0</p>
+                    <p class="text-[10px] sm:text-xs text-slate-500 font-medium">派駐案場數</p>
+                    <p id="statSites" class="text-lg sm:text-2xl font-bold text-indigo-600">0</p>
                 </div>
-                <div class="p-2.5 bg-indigo-50 text-indigo-600 rounded-lg text-sm">🏢</div>
-            </div>
-            <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
-                <div>
-                    <p class="text-[11px] text-slate-500 font-medium">法扣/低收</p>
-                    <p id="statSpecial" class="text-xl sm:text-2xl font-bold text-amber-600">0</p>
-                </div>
-                <div class="p-2.5 bg-amber-50 text-amber-600 rounded-lg text-sm">⚠️</div>
+                <div class="hidden sm:flex p-2.5 bg-indigo-50 text-indigo-600 rounded-lg text-sm">🏢</div>
             </div>
         </div>
 
@@ -86,7 +79,7 @@
             </div>
         </div>
 
-        <!-- 員工清單容器 (手機卡片式 / 桌面自適應) -->
+        <!-- 員工清單容器 -->
         <div class="mb-4 flex justify-between items-center px-1">
             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">員工名單列表</h3>
             <span id="resultCount" class="text-xs text-slate-400">共 0 筆</span>
@@ -99,7 +92,7 @@
         </div>
     </main>
 
-    <!-- 員工詳細資料與編輯 Modal（完整 28 欄位） -->
+    <!-- 員工詳細資料與編輯 Modal -->
     <div id="detailModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-3 sm:p-4 z-50">
         <div class="bg-white rounded-2xl max-w-4xl w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -126,7 +119,7 @@
         </div>
     </div>
 
-    <!-- 新增員工表單 Modal（精簡 10 欄位，附帶歷史資料下拉建議） -->
+    <!-- 新增員工表單 Modal -->
     <div id="addModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-3 sm:p-4 z-50">
         <div class="bg-white rounded-2xl max-w-2xl w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -190,7 +183,7 @@
 
     <!-- JavaScript 邏輯 -->
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyqbBIoRK6kKKg77hxu7ZqTNanEhcLJsH0zHyYhqGjuyO8tbs81Jaslzsp0kP-MmUE9OQ/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzrCMvRnAJ7rGF0XfFOSOzP26HmcX3czFDK_F5vQNILnJ_sorB1rizL_jy9Yi0ecaZM5w/exec"; 
         let allEmployees = [];
         let currentEditingEmp = null;
 
@@ -253,9 +246,6 @@
             
             const sites = new Set(data.map(e => e["目前派駐案場"]).filter(Boolean));
             document.getElementById("statSites").innerText = sites.size;
-            
-            const specialCount = data.filter(e => (e["法院扣薪(法扣)"] && e["法院扣薪(法扣)"] !== "無") || (e["低收入戶身分"] && e["低收入戶身分"] !== "否")).length;
-            document.getElementById("statSpecial").innerText = specialCount;
         }
 
         function updateSiteFilterOptions(data) {
@@ -296,7 +286,6 @@
             filterData();
         }
 
-        // 以卡片式排版渲染員工列表
         function renderCards(data) {
             const container = document.getElementById("employeeCardContainer");
             document.getElementById("resultCount").innerText = `共 ${data.length} 筆`;
@@ -316,7 +305,6 @@
                 return `
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition">
                         <div>
-                            <!-- 卡片頂部：姓名與狀態 -->
                             <div class="flex justify-between items-start mb-2.5">
                                 <div>
                                     <h4 class="text-base font-bold text-slate-900">${emp["姓名"] || "未填寫"}</h4>
@@ -327,7 +315,6 @@
                                 </span>
                             </div>
 
-                            <!-- 資訊內容區塊 -->
                             <div class="space-y-1.5 text-xs text-slate-600 border-t border-slate-100 pt-2.5 mb-3">
                                 <div class="flex justify-between">
                                     <span class="text-slate-400">派駐案場：</span>
@@ -352,7 +339,6 @@
                             </div>
                         </div>
 
-                        <!-- 卡片底部動作按鈕 -->
                         <div class="pt-2 border-t border-slate-100 flex justify-end">
                             <button onclick='showDetail(${originalIndex})' class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-2 rounded-lg transition text-center">
                                 檢視完整檔案與編輯 ➔
