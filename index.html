@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <!-- 功能選單區塊 -->
+        <!-- 功能選單區塊（模擬左側/上方快捷按鈕清單） -->
         <div class="mb-6">
             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">功能選單</h3>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -147,7 +147,7 @@
             <form id="editEmployeeForm" onsubmit="submitEditEmployee(event)">
                 <input type="hidden" id="editRowIndex" name="rowIndex">
                 <div id="modalContent" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                    <!-- 動態載入詳細欄位或編輯表單 -->
+                    <!-- 動態載入 28 欄位或編輯表單 -->
                 </div>
                 <div id="modalActions" class="flex justify-between items-center mt-6 border-t pt-4">
                     <div>
@@ -198,7 +198,7 @@
     <div id="addModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-lg font-bold text-slate-900">新增員工完整人事資料（共 28 欄位）</h3>
+                <h3 class="text-lg font-bold text-slate-900">新增完整人事資料（共 28 欄位）</h3>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
             </div>
             <form id="addEmployeeForm" onsubmit="submitNewEmployee(event)" class="space-y-4 text-sm">
@@ -286,7 +286,7 @@
 
     <!-- JavaScript 邏輯 -->
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyqbBIoRK6kKKg77hxu7ZqTNanEhcLJsH0zHyYhqGjuyO8tbs81Jaslzsp0kP-MmUE9OQ/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbx_uF58vrn1muNdcHoFv6ILqCyziNRRukI5oG2vjrBPnxBkyW9uKa_EH9gF_6Qx_7eZSg/exec"; // 請替換為您的 GAS 部署網址
         let allEmployees = [];
         let currentEditingEmp = null;
 
@@ -436,7 +436,7 @@
         }
 
         function showDetail(index) {
-            currentEditingEmp = { ...allEmployees[index], _rowIndex: index + 2 }; // Google Sheet 通常從第 2 列開始（含標題）
+            currentEditingEmp = { ...allEmployees[index], _rowIndex: index + 2 }; // Google Sheets 從第 2 列開始（第 1 列為標題）
             document.getElementById("editRowIndex").value = currentEditingEmp._rowIndex;
             document.getElementById("modalTitle").innerText = `${currentEditingEmp["姓名"]} - 完整人事與投保檔案`;
             
@@ -491,7 +491,7 @@
             const formData = new FormData(form);
             const dataObj = {};
             formData.forEach((value, key) => dataObj[key] = value);
-            dataObj["_action"] = "update"; // 識別為更新動作
+            dataObj["_action"] = "update"; // 識別為更新指令
 
             const saveBtn = document.getElementById("saveEditBtn");
             saveBtn.disabled = true;
