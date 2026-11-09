@@ -7,58 +7,58 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans">
+<body class="bg-slate-100 text-slate-800 font-sans pb-12">
 
     <!-- 頂部導航列 -->
-    <header class="bg-slate-900 text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <span class="text-2xl">🛡️</span>
-                <h1 class="text-xl font-bold tracking-wide">強祐保全｜專業人事管理系統</h1>
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3.5 flex justify-between items-center">
+            <div class="flex items-center space-x-2.5">
+                <span class="text-xl">🛡️</span>
+                <h1 class="text-base sm:text-xl font-bold tracking-wide">強祐保全｜人事管理</h1>
             </div>
-            <button onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
-                <span>＋</span> 新增員工資料
+            <button onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-3.5 py-1.5 rounded-lg shadow text-sm transition flex items-center gap-1.5">
+                <span>＋</span> 新增員工
             </button>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-6">
+    <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         
         <!-- 統計摘要卡片 -->
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 sm:mb-6">
+            <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
                 <div>
-                    <p class="text-xs text-slate-500 font-medium">總員工數</p>
-                    <p id="statTotal" class="text-2xl font-bold text-slate-800">0</p>
+                    <p class="text-[11px] text-slate-500 font-medium">總員工數</p>
+                    <p id="statTotal" class="text-xl sm:text-2xl font-bold text-slate-800">0</p>
                 </div>
-                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">👥</div>
+                <div class="p-2.5 bg-blue-50 text-blue-600 rounded-lg text-sm">👥</div>
             </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+            <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
                 <div>
-                    <p class="text-xs text-slate-500 font-medium">線上在職</p>
-                    <p id="statActive" class="text-2xl font-bold text-emerald-600">0</p>
+                    <p class="text-[11px] text-slate-500 font-medium">線上在職</p>
+                    <p id="statActive" class="text-xl sm:text-2xl font-bold text-emerald-600">0</p>
                 </div>
-                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg">✅</div>
+                <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-lg text-sm">✅</div>
             </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+            <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
                 <div>
-                    <p class="text-xs text-slate-500 font-medium">目前派駐案場數</p>
-                    <p id="statSites" class="text-2xl font-bold text-indigo-600">0</p>
+                    <p class="text-[11px] text-slate-500 font-medium">派駐案場數</p>
+                    <p id="statSites" class="text-xl sm:text-2xl font-bold text-indigo-600">0</p>
                 </div>
-                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg">🏢</div>
+                <div class="p-2.5 bg-indigo-50 text-indigo-600 rounded-lg text-sm">🏢</div>
             </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+            <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
                 <div>
-                    <p class="text-xs text-slate-500 font-medium">法扣 / 支援低收</p>
-                    <p id="statSpecial" class="text-2xl font-bold text-amber-600">0</p>
+                    <p class="text-[11px] text-slate-500 font-medium">法扣/低收</p>
+                    <p id="statSpecial" class="text-xl sm:text-2xl font-bold text-amber-600">0</p>
                 </div>
-                <div class="p-3 bg-amber-50 text-amber-600 rounded-lg">⚠️</div>
+                <div class="p-2.5 bg-amber-50 text-amber-600 rounded-lg text-sm">⚠️</div>
             </div>
         </div>
 
         <!-- 進階篩選與搜尋控制台 -->
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-6">
-            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-4 sm:mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">關鍵字搜尋</label>
                     <input type="text" id="searchKeyword" oninput="filterData()" placeholder="姓名、電話、身分證..." 
@@ -86,103 +86,96 @@
             </div>
         </div>
 
-        <!-- 員工資料列表 (表格) -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider">
-                            <th class="p-3.5">服務單位 / 姓名</th>
-                            <th class="p-3.5">目前派駐案場 / 職稱</th>
-                            <th class="p-3.5">聯絡電話</th>
-                            <th class="p-3.5">約定薪資</th>
-                            <th class="p-3.5">勞健保級距</th>
-                            <th class="p-3.5">在職狀態</th>
-                            <th class="p-3.5 text-center">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody id="employeeTableBody" class="divide-y divide-slate-100 text-sm">
-                        <tr><td colspan="7" class="p-6 text-center text-slate-500">正在與 Google Sheets 同步資料中...</td></tr>
-                    </tbody>
-                </table>
+        <!-- 員工清單容器 (手機卡片式 / 桌面自適應) -->
+        <div class="mb-4 flex justify-between items-center px-1">
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">員工名單列表</h3>
+            <span id="resultCount" class="text-xs text-slate-400">共 0 筆</span>
+        </div>
+        
+        <div id="employeeCardContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center text-slate-500 sm:col-span-2 lg:col-span-3">
+                正在與 Google Sheets 同步資料中...
             </div>
         </div>
     </main>
 
     <!-- 員工詳細資料與編輯 Modal（完整 28 欄位） -->
-    <div id="detailModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+    <div id="detailModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-3 sm:p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-4xl w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 id="modalTitle" class="text-lg font-bold text-slate-900">員工詳細資料</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
+                <h3 id="modalTitle" class="text-base sm:text-lg font-bold text-slate-900">員工詳細資料</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl px-2">✕</button>
             </div>
             
             <form id="editEmployeeForm" onsubmit="submitEditEmployee(event)">
                 <input type="hidden" id="editRowIndex" name="rowIndex">
-                <div id="modalContent" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                <div id="modalContent" class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-sm">
                     <!-- 動態載入 28 欄位或編輯表單 -->
                 </div>
-                <div id="modalActions" class="flex justify-between items-center mt-6 border-t pt-4">
-                    <div>
-                        <button type="button" onclick="deleteEmployee()" class="px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-sm font-medium transition">刪除員工</button>
+                <div id="modalActions" class="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6 border-t pt-4">
+                    <div class="w-full sm:w-auto">
+                        <button type="button" onclick="deleteEmployee()" class="w-full sm:w-auto px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-sm font-medium transition text-center">刪除員工</button>
                     </div>
-                    <div class="flex gap-3">
-                        <button type="button" id="editBtn" onclick="enableEditMode()" class="px-5 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-medium transition">編輯資料</button>
-                        <button type="submit" id="saveEditBtn" class="px-5 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg text-sm font-medium transition hidden">儲存變更</button>
-                        <button type="button" onclick="closeModal()" class="px-5 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-sm font-medium transition">關閉</button>
+                    <div class="flex gap-2 w-full sm:w-auto justify-end">
+                        <button type="button" id="editBtn" onclick="enableEditMode()" class="flex-1 sm:flex-initial px-5 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-medium transition">編輯資料</button>
+                        <button type="submit" id="saveEditBtn" class="flex-1 sm:flex-initial px-5 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg text-sm font-medium transition hidden">儲存變更</button>
+                        <button type="button" onclick="closeModal()" class="flex-1 sm:flex-initial px-5 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-sm font-medium transition">關閉</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- 新增員工表單 Modal（精簡 10 欄位） -->
-    <div id="addModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+    <!-- 新增員工表單 Modal（精簡 10 欄位，附帶歷史資料下拉建議） -->
+    <div id="addModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-3 sm:p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-lg font-bold text-slate-900">新增保全人員資料</h3>
-                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
+                <h3 class="text-base sm:text-lg font-bold text-slate-900">新增保全人員資料</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl px-2">✕</button>
             </div>
-            <form id="addEmployeeForm" onsubmit="submitNewEmployee(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+            <form id="addEmployeeForm" onsubmit="submitNewEmployee(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-sm">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600">服務單位</label>
-                    <input type="text" name="服務單位" required class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                    <input type="text" name="服務單位" list="unitList" required class="w-full mt-1 border border-slate-300 rounded-lg p-2 text-sm">
+                    <datalist id="unitList"></datalist>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600">姓名</label>
-                    <input type="text" name="姓名" required class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                    <input type="text" name="姓名" required class="w-full mt-1 border border-slate-300 rounded-lg p-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600">目前派駐案場</label>
-                    <input type="text" name="目前派駐案場" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                    <input type="text" name="目前派駐案場" list="siteList" class="w-full mt-1 border border-slate-300 rounded-lg p-2 text-sm">
+                    <datalist id="siteList"></datalist>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600">職稱</label>
-                    <input type="text" name="職稱" value="保全人員" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                    <input type="text" name="職稱" value="保全人員" list="titleList" class="w-full mt-1 border border-slate-300 rounded-lg p-2 text-sm">
+                    <datalist id="titleList"></datalist>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600">入職日期</label>
-                    <input type="date" name="入職日期" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                    <input type="date" name="入職日期" class="w-full mt-1 border border-slate-300 rounded-lg p-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600">約定薪資</label>
-                    <input type="number" name="約定薪資" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                    <input type="number" name="約定薪資" class="w-full mt-1 border border-slate-300 rounded-lg p-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600">勞健保級距</label>
-                    <input type="number" name="勞健保級距" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                    <input type="number" name="勞健保級距" class="w-full mt-1 border border-slate-300 rounded-lg p-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600">聯絡電話</label>
-                    <input type="tel" name="聯絡電話" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                    <input type="tel" name="聯絡電話" class="w-full mt-1 border border-slate-300 rounded-lg p-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600">身分證字號</label>
-                    <input type="text" name="身分證字號" class="w-full mt-1 border border-slate-300 rounded-lg p-2 uppercase">
+                    <input type="text" name="身分證字號" class="w-full mt-1 border border-slate-300 rounded-lg p-2 uppercase text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600">在職狀態</label>
-                    <select name="在職狀態" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                    <select name="在職狀態" class="w-full mt-1 border border-slate-300 rounded-lg p-2 text-sm">
                         <option value="在職" selected>在職</option>
                         <option value="離職">離職</option>
                     </select>
@@ -201,7 +194,6 @@
         let allEmployees = [];
         let currentEditingEmp = null;
 
-        // 28 個完整欄位設定，用於詳細資料與編輯
         const fieldConfigs = [
             { label: "服務單位", key: "服務單位" },
             { label: "姓名", key: "姓名" },
@@ -243,10 +235,14 @@
                 allEmployees = await response.json();
                 updateStatistics(allEmployees);
                 updateSiteFilterOptions(allEmployees);
+                updateDatalists(allEmployees);
                 filterData();
             } catch (error) {
                 console.error("資料載入失敗", error);
-                document.getElementById("employeeTableBody").innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500 font-medium">無法讀取資料，請檢查 GAS 部署連結是否正確。</td></tr>`;
+                document.getElementById("employeeCardContainer").innerHTML = `
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-red-200 text-center text-red-500 sm:col-span-2 lg:col-span-3 font-medium">
+                        無法讀取資料，請檢查 GAS 部署連結是否正確。
+                    </div>`;
             }
         }
 
@@ -268,6 +264,16 @@
             select.innerHTML = '<option value="">全部案場</option>' + sites.map(site => `<option value="${site}">${site}</option>`).join('');
         }
 
+        function updateDatalists(data) {
+            const units = [...new Set(data.map(item => item["服務單位"]).filter(Boolean))];
+            const sites = [...new Set(data.map(item => item["目前派駐案場"]).filter(Boolean))];
+            const titles = [...new Set(data.map(item => item["職稱"]).filter(Boolean))];
+
+            document.getElementById("unitList").innerHTML = units.map(u => `<option value="${u}">`).join('');
+            document.getElementById("siteList").innerHTML = sites.map(s => `<option value="${s}">`).join('');
+            document.getElementById("titleList").innerHTML = titles.map(t => `<option value="${t}">`).join('');
+        }
+
         function filterData() {
             const keyword = document.getElementById("searchKeyword").value.toLowerCase();
             const selectedSite = document.getElementById("filterSite").value;
@@ -280,7 +286,7 @@
                 return textMatch && siteMatch && statusMatch;
             });
 
-            renderTable(filtered);
+            renderCards(filtered);
         }
 
         function resetFilters() {
@@ -290,45 +296,75 @@
             filterData();
         }
 
-        function renderTable(data) {
-            const tbody = document.getElementById("employeeTableBody");
+        // 以卡片式排版渲染員工列表
+        function renderCards(data) {
+            const container = document.getElementById("employeeCardContainer");
+            document.getElementById("resultCount").innerText = `共 ${data.length} 筆`;
+            
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">查無符合條件的員工記錄</td></tr>`;
+                container.innerHTML = `
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center text-slate-400 sm:col-span-2 lg:col-span-3">
+                        查無符合條件的員工記錄
+                    </div>`;
                 return;
             }
 
-            tbody.innerHTML = data.map((emp) => {
+            container.innerHTML = data.map((emp) => {
                 const originalIndex = allEmployees.findIndex(item => item === emp);
+                const isActive = (emp["在職狀態"] || "").trim() === "在職";
+                
                 return `
-                    <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                        <td class="p-3.5">
-                            <div class="font-bold text-slate-900">${emp["姓名"] || "未填寫"}</div>
-                            <div class="text-xs text-slate-500">${emp["服務單位"] || ""}</div>
-                        </td>
-                        <td class="p-3.5">
-                            <span class="inline-block bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-xs font-semibold mb-1">${emp["目前派駐案場"] || "未指派案場"}</span>
-                            <div class="text-xs text-slate-500">${emp["職稱"] || ""}</div>
-                        </td>
-                        <td class="p-3.5 text-slate-700">${emp["聯絡電話"] || "-"}</td>
-                        <td class="p-3.5 font-medium text-slate-900">${emp["約定薪資"] ? Number(emp["約定薪資"]).toLocaleString() : "-"}</td>
-                        <td class="p-3.5 text-slate-600">${emp["勞健保級距"] || "-"}</td>
-                        <td class="p-3.5">
-                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${emp["在職狀態"] === '在職' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
-                                ${emp["在職狀態"] || "未知"}
-                            </span>
-                        </td>
-                        <td class="p-3.5 text-center">
-                            <button onclick='showDetail(${originalIndex})' class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-lg transition">
-                                詳細檔案
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition">
+                        <div>
+                            <!-- 卡片頂部：姓名與狀態 -->
+                            <div class="flex justify-between items-start mb-2.5">
+                                <div>
+                                    <h4 class="text-base font-bold text-slate-900">${emp["姓名"] || "未填寫"}</h4>
+                                    <p class="text-xs text-slate-500 font-medium">${emp["服務單位"] || "未填寫單位"}</p>
+                                </div>
+                                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                                    ${emp["在職狀態"] || "未知"}
+                                </span>
+                            </div>
+
+                            <!-- 資訊內容區塊 -->
+                            <div class="space-y-1.5 text-xs text-slate-600 border-t border-slate-100 pt-2.5 mb-3">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">派駐案場：</span>
+                                    <span class="font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">${emp["目前派駐案場"] || "未指派"}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">職稱：</span>
+                                    <span class="font-medium text-slate-700">${emp["職稱"] || "-"}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">聯絡電話：</span>
+                                    <span class="font-medium text-slate-800">${emp["聯絡電話"] || "-"}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">約定薪資：</span>
+                                    <span class="font-medium text-slate-900">${emp["約定薪資"] ? Number(emp["約定薪資"]).toLocaleString() : "-"}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">勞健保級距：</span>
+                                    <span class="font-medium text-slate-700">${emp["勞健保級距"] || "-"}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 卡片底部動作按鈕 -->
+                        <div class="pt-2 border-t border-slate-100 flex justify-end">
+                            <button onclick='showDetail(${originalIndex})' class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-2 rounded-lg transition text-center">
+                                檢視完整檔案與編輯 ➔
                             </button>
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
                 `;
             }).join('');
         }
 
         function showDetail(index) {
-            currentEditingEmp = { ...allEmployees[index], _rowIndex: index + 2 }; // Google Sheets 從第 2 列開始（第 1 列為標題）
+            currentEditingEmp = { ...allEmployees[index], _rowIndex: index + 2 }; 
             document.getElementById("editRowIndex").value = currentEditingEmp._rowIndex;
             document.getElementById("modalTitle").innerText = `${currentEditingEmp["姓名"]} - 完整人事與投保檔案`;
             
@@ -347,23 +383,23 @@
                     if (f.type === "select") {
                         const optionsHtml = f.options.map(opt => `<option value="${opt}" ${val === opt ? 'selected' : ''}>${opt}</option>`).join('');
                         return `
-                            <div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-3 rounded-lg border border-slate-200">
-                                <label class="block text-xs font-semibold text-slate-500 mb-1">${f.label}</label>
+                            <div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                                <label class="block text-[11px] font-semibold text-slate-500 mb-1">${f.label}</label>
                                 <select name="${f.key}" class="w-full border border-slate-300 rounded p-1.5 text-sm">${optionsHtml}</select>
                             </div>
                         `;
                     } else {
                         return `
-                            <div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-3 rounded-lg border border-slate-200">
-                                <label class="block text-xs font-semibold text-slate-500 mb-1">${f.label}</label>
+                            <div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                                <label class="block text-[11px] font-semibold text-slate-500 mb-1">${f.label}</label>
                                 <input type="${f.type || 'text'}" name="${f.key}" value="${val}" class="w-full border border-slate-300 rounded p-1.5 text-sm">
                             </div>
                         `;
                     }
                 } else {
                     return `
-                        <div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-3 rounded-lg border border-slate-200">
-                            <span class="block text-xs font-semibold text-slate-400 mb-0.5">${f.label}</span>
+                        <div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                            <span class="block text-[11px] font-semibold text-slate-400 mb-0.5">${f.label}</span>
                             <span class="font-medium text-slate-800">${val || "無 / 未填寫"}</span>
                         </div>
                     `;
@@ -383,7 +419,7 @@
             const formData = new FormData(form);
             const dataObj = {};
             formData.forEach((value, key) => dataObj[key] = value);
-            dataObj["_action"] = "update"; // 識別為更新指令
+            dataObj["_action"] = "update"; 
 
             const saveBtn = document.getElementById("saveEditBtn");
             saveBtn.disabled = true;
