@@ -144,15 +144,22 @@
                 <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
             </div>
             
-            <!-- 動態載入詳細內容或編輯表單 -->
-            <div id="modalBodyContainer"></div>
-
-            <div class="flex justify-between items-center mt-6 border-t pt-4">
-                <div id="modalActionBtns" class="flex gap-2">
-                    <!-- 動態載入編輯/刪除按鈕 -->
+            <form id="editEmployeeForm" onsubmit="submitEditEmployee(event)">
+                <input type="hidden" id="editRowIndex" name="rowIndex">
+                <div id="modalContent" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                    <!-- 動態載入詳細欄位或編輯表單 -->
                 </div>
-                <button onclick="closeModal()" class="px-5 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-sm font-medium">關閉</button>
-            </div>
+                <div id="modalActions" class="flex justify-between items-center mt-6 border-t pt-4">
+                    <div>
+                        <button type="button" onclick="deleteEmployee()" class="px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-sm font-medium transition">刪除員工</button>
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="button" id="editBtn" onclick="enableEditMode()" class="px-5 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-medium transition">編輯資料</button>
+                        <button type="submit" id="saveEditBtn" class="px-5 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg text-sm font-medium transition hidden">儲存變更</button>
+                        <button type="button" onclick="closeModal()" class="px-5 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-sm font-medium transition">關閉</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -187,7 +194,7 @@
         </div>
     </div>
 
-    <!-- 新增員工完整 28 欄位表單 Modal (保持不變) -->
+    <!-- 新增員工表單 Modal -->
     <div id="addModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -195,6 +202,7 @@
                 <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
             </div>
             <form id="addEmployeeForm" onsubmit="submitNewEmployee(event)" class="space-y-4 text-sm">
+                <!-- 1. 基本資料區塊 -->
                 <div>
                     <h4 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2 border-b pb-1">基本與派駐資料</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -203,7 +211,10 @@
                         <div><label class="block text-xs font-semibold text-slate-600">目前派駐案場</label><input type="text" name="目前派駐案場" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
                         <div><label class="block text-xs font-semibold text-slate-600">職稱</label><input type="text" name="職稱" value="保全人員" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
                         <div><label class="block text-xs font-semibold text-slate-600">入職日期</label><input type="date" name="入職日期" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">在職狀態</label><select name="在職狀態" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="在職" selected>在職</option><option value="離職">離職</option></select></div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">在職狀態</label>
+                            <select name="在職狀態" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="在職" selected>在職</option><option value="離職">離職</option></select>
+                        </div>
                         <div><label class="block text-xs font-semibold text-slate-600">離職日期</label><input type="date" name="離職日期" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
                         <div><label class="block text-xs font-semibold text-slate-600">聯絡電話</label><input type="tel" name="聯絡電話" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
                         <div><label class="block text-xs font-semibold text-slate-600">出生年月日</label><input type="date" name="出生年月日" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
@@ -211,36 +222,54 @@
                     </div>
                 </div>
 
+                <!-- 2. 薪資與投保區塊 -->
                 <div>
                     <h4 class="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-2 border-b pb-1">薪資與勞健保投保</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                         <div><label class="block text-xs font-semibold text-slate-600">約定薪資</label><input type="number" name="約定薪資" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">薪資別</label><select name="薪資別" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="月薪">月薪</option><option value="日薪">日薪</option><option value="時薪">時薪</option></select></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">投保勞健保</label><select name="投保勞健保" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="是">是</option><option value="否">否</option></select></div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">薪資別</label>
+                            <select name="薪資別" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="月薪">月薪</option><option value="日薪">日薪</option><option value="時薪">時薪</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">投保勞健保</label>
+                            <select name="投保勞健保" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="是">是</option><option value="否">否</option></select>
+                        </div>
                         <div><label class="block text-xs font-semibold text-slate-600">勞健保級距</label><input type="number" name="勞健保級距" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
                         <div><label class="block text-xs font-semibold text-slate-600">健保眷屬人數</label><input type="number" name="健保眷屬人數" value="0" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">投保團保</label><select name="投保團保" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="是">是</option><option value="否">否</option></select></div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">投保團保</label>
+                            <select name="投保團保" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="是">是</option><option value="否">否</option></select>
+                        </div>
                         <div><label class="block text-xs font-semibold text-slate-600">報稅</label><input type="text" name="報稅" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
                     </div>
                 </div>
 
+                <!-- 3. 身分與安調機密區塊 -->
                 <div>
                     <h4 class="text-xs font-bold text-amber-600 uppercase tracking-wider mb-2 border-b pb-1">身分證、安調與特殊身分</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                         <div><label class="block text-xs font-semibold text-slate-600">身分證字號</label><input type="text" name="身分證字號" class="w-full mt-1 border border-slate-300 rounded-lg p-2 uppercase"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">是否有做安調</label><select name="是否有做安調" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="是">是</option><option value="否">否</option></select></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">安調狀態</label><input type="text" name="安調" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">低收入戶身分</label><select name="低收入戶身分" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="否">否</option><option value="是">是</option></select></div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">是否有做安調</label>
+                            <select name="是否有做安調" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="是">是</option><option value="否">否</option></select>
+                        </div>
+                        <div><label class="block text-xs font-semibold text-slate-600">安調狀態</label><input type="text" name="安調" class="w-full mt-1 border border-slate-300 rounded-lg p-2" placeholder="通過/未通過..."></div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">低收入戶身分</label>
+                            <select name="低收入戶身分" class="w-full mt-1 border border-slate-300 rounded-lg p-2"><option value="否">否</option><option value="是">是</option></select>
+                        </div>
                         <div><label class="block text-xs font-semibold text-slate-600">法院扣薪(法扣)</label><input type="text" name="法院扣薪(法扣)" value="無" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
                         <div class="sm:col-span-3"><label class="block text-xs font-semibold text-slate-600">前科紀錄</label><input type="text" name="前科紀錄" value="無" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
                     </div>
                 </div>
 
+                <!-- 4. 緊急聯絡人與備註區塊 -->
                 <div>
                     <h4 class="text-xs font-bold text-rose-600 uppercase tracking-wider mb-2 border-b pb-1">緊急聯絡人與備註</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div><label class="block text-xs font-semibold text-slate-600">緊急聯絡人</label><input type="text" name="緊急聯絡人" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
-                        <div><label class="block text-xs font-semibold text-slate-600">關係</label><input type="text" name="關係" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
+                        <div><label class="block text-xs font-semibold text-slate-600">關係</label><input type="text" name="關係" class="w-full mt-1 border border-slate-300 rounded-lg p-2" placeholder="配偶、父母..."></div>
                         <div><label class="block text-xs font-semibold text-slate-600">緊急聯絡人電話</label><input type="tel" name="緊急聯絡人電話" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
                         <div><label class="block text-xs font-semibold text-slate-600">備註</label><input type="text" name="備註" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
                         <div class="sm:col-span-2"><label class="block text-xs font-semibold text-slate-600">其它</label><input type="text" name="其它" class="w-full mt-1 border border-slate-300 rounded-lg p-2"></div>
@@ -257,9 +286,40 @@
 
     <!-- JavaScript 邏輯 -->
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbx_uF58vrn1muNdcHoFv6ILqCyziNRRukI5oG2vjrBPnxBkyW9uKa_EH9gF_6Qx_7eZSg/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyqbBIoRK6kKKg77hxu7ZqTNanEhcLJsH0zHyYhqGjuyO8tbs81Jaslzsp0kP-MmUE9OQ/exec"; 
         let allEmployees = [];
-        let currentEditingIndex = null;
+        let currentEditingEmp = null;
+
+        const fieldConfigs = [
+            { label: "服務單位", key: "服務單位" },
+            { label: "姓名", key: "姓名" },
+            { label: "目前派駐案場", key: "目前派駐案場" },
+            { label: "職稱", key: "職稱" },
+            { label: "入職日期", key: "入職日期", type: "date" },
+            { label: "離職日期", key: "離職日期", type: "date" },
+            { label: "在職狀態", key: "在職狀態", type: "select", options: ["在職", "離職"] },
+            { label: "約定薪資", key: "約定薪資", type: "number" },
+            { label: "薪資別", key: "薪資別", type: "select", options: ["月薪", "日薪", "時薪"] },
+            { label: "聯絡電話", key: "聯絡電話", type: "tel" },
+            { label: "身分證字號", key: "身分證字號" },
+            { label: "出生年月日", key: "出生年月日", type: "date" },
+            { label: "投保勞健保", key: "投保勞健保", type: "select", options: ["是", "否"] },
+            { label: "勞健保級距", key: "勞健保級距", type: "number" },
+            { label: "健保眷屬人數", key: "健保眷屬人數", type: "number" },
+            { label: "投保團保", key: "投保團保", type: "select", options: ["是", "否"] },
+            { label: "緊急聯絡人", key: "緊急聯絡人" },
+            { label: "關係", key: "關係" },
+            { label: "緊急聯絡人電話", key: "緊急聯絡人電話", type: "tel" },
+            { label: "安調狀態", key: "安調" },
+            { label: "是否有做安調", key: "是否有做安調", type: "select", options: ["是", "否"] },
+            { label: "前科紀錄", key: "前科紀錄" },
+            { label: "法院扣薪(法扣)", key: "法院扣薪(法扣)" },
+            { label: "低收入戶身分", key: "低收入戶身分", type: "select", options: ["否", "是"] },
+            { label: "報稅", key: "報稅" },
+            { label: "通訊地址", key: "通訊地址", full: true },
+            { label: "備註", key: "備註", full: true },
+            { label: "其它", key: "其它", full: true }
+        ];
 
         window.onload = function() {
             fetchData();
@@ -274,7 +334,7 @@
                 filterData();
             } catch (error) {
                 console.error("資料載入失敗", error);
-                document.getElementById("employeeTableBody").innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-500 font-medium">無法讀取資料，請檢查 GAS 連結。</td></tr>`;
+                document.getElementById("employeeTableBody").innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-500 font-medium">無法讀取資料，請檢查 GAS 部署連結是否正確。</td></tr>`;
             }
         }
 
@@ -314,10 +374,20 @@
         }
 
         function filterByMenu(type) {
-            if (type === '通訊錄') resetFilters();
-            else if (type === '案場') { document.getElementById("searchKeyword").value = ""; document.getElementById("filterStatus").value = ""; filterData(); }
-            else if (type === '人事') { document.getElementById("searchKeyword").value = ""; document.getElementById("filterStatus").value = "在職"; filterData(); }
-            else if (type === '緊急聯絡') { document.getElementById("searchKeyword").value = "緊急"; filterData(); }
+            if (type === '通訊錄') {
+                resetFilters();
+            } else if (type === '案場') {
+                document.getElementById("searchKeyword").value = "";
+                document.getElementById("filterStatus").value = "";
+                filterData();
+            } else if (type === '人事') {
+                document.getElementById("searchKeyword").value = "";
+                document.getElementById("filterStatus").value = "在職";
+                filterData();
+            } else if (type === '緊急聯絡') {
+                document.getElementById("searchKeyword").value = "緊急";
+                filterData();
+            }
         }
 
         function resetFilters() {
@@ -337,7 +407,7 @@
             }
 
             tbody.innerHTML = data.map((emp) => {
-                const realIndex = allEmployees.indexOf(emp);
+                const originalIndex = allEmployees.findIndex(item => item === emp);
                 return `
                     <tr class="hover:bg-slate-50 transition border-b border-slate-100">
                         <td class="p-3.5">
@@ -356,7 +426,7 @@
                             </span>
                         </td>
                         <td class="p-3.5 text-center">
-                            <button onclick='showDetail(${realIndex})' class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-lg transition">
+                            <button onclick='showDetail(${originalIndex})' class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-lg transition">
                                 詳細檔案
                             </button>
                         </td>
@@ -365,83 +435,115 @@
             }).join('');
         }
 
-        // 1. 檢視詳細檔案 (唯讀模式)
         function showDetail(index) {
-            currentEditingIndex = index;
-            const emp = allEmployees[index];
-            document.getElementById("modalTitle").innerText = `${emp["姓名"]} - 完整人事與投保檔案`;
+            currentEditingEmp = { ...allEmployees[index], _rowIndex: index + 2 }; // Google Sheet 通常從第 2 列開始（含標題）
+            document.getElementById("editRowIndex").value = currentEditingEmp._rowIndex;
+            document.getElementById("modalTitle").innerText = `${currentEditingEmp["姓名"]} - 完整人事與投保檔案`;
             
-            const fields = [
-                "服務單位", "姓名", "目前派駐案場", "職稱", "入職日期", "離職日期", "在職狀態",
-                "約定薪資", "薪資別", "聯絡電話", "身分證字號", "出生年月日", "投保勞健保",
-                "勞健保級距", "健保眷屬人數", "投保團保", "緊急聯絡人", "關係", "緊急聯絡人電話",
-                "安調", "是否有做安調", "前科紀錄", "法院扣薪(法扣)", "低收入戶身分", "報稅",
-                "通訊地址", "備註", "其它"
-            ];
-
-            const container = document.getElementById("modalBodyContainer");
-            container.innerHTML = `
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                    ${fields.map(key => `
-                        <div class="${['通訊地址', '備註', '其它'].includes(key) ? 'sm:col-span-3' : ''} bg-slate-50 p-3 rounded-lg border border-slate-200">
-                            <span class="block text-xs font-semibold text-slate-400 mb-0.5">${key}</span>
-                            <span class="font-medium text-slate-800">${emp[key] || "無 / 未填寫"}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-
-            document.getElementById("modalActionBtns").innerHTML = `
-                <button onclick="openEditMode()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-medium transition">✏️ 編輯修改</button>
-            `;
-
+            renderDetailFields(false);
+            
+            document.getElementById("editBtn").classList.remove("hidden");
+            document.getElementById("saveEditBtn").classList.add("hidden");
             document.getElementById("detailModal").classList.remove("hidden");
         }
 
-        // 2. 切換為編輯修改模式 (表單欄位對應 28 欄位)
-        function openEditMode() {
-            const emp = allEmployees[currentEditingIndex];
-            const container = document.getElementById("modalBodyContainer");
-            document.getElementById("modalTitle").innerText = `編輯員工資料 - ${emp["姓名"]}`;
-
-            const fields = [
-                "服務單位", "姓名", "目前派駐案場", "職稱", "入職日期", "離職日期", "在職狀態",
-                "約定薪資", "薪資別", "聯絡電話", "身分證字號", "出生年月日", "投保勞健保",
-                "勞健保級距", "健保眷屬人數", "投保團保", "緊急聯絡人", "關係", "緊急聯絡人電話",
-                "安調", "是否有做安調", "前科紀錄", "法院扣薪(法扣)", "低收入戶身分", "報稅",
-                "通訊地址", "備註", "其它"
-            ];
-
-            container.innerHTML = `
-                <form id="editEmployeeForm" onsubmit="submitEditEmployee(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                    ${fields.map(key => `
-                        <div class="${['通訊地址', '備註', '其它'].includes(key) ? 'sm:col-span-3' : ''}">
-                            <label class="block text-xs font-semibold text-slate-600">${key}</label>
-                            <input type="text" name="${key}" value="${emp[key] || ''}" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+        function renderDetailFields(isEdit) {
+            const modalContent = document.getElementById("modalContent");
+            modalContent.innerHTML = fieldConfigs.map(f => {
+                const val = currentEditingEmp[f.key] || "";
+                if (isEdit) {
+                    if (f.type === "select") {
+                        const optionsHtml = f.options.map(opt => `<option value="${opt}" ${val === opt ? 'selected' : ''}>${opt}</option>`).join('');
+                        return `
+                            <div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-3 rounded-lg border border-slate-200">
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">${f.label}</label>
+                                <select name="${f.key}" class="w-full border border-slate-300 rounded p-1.5 text-sm">${optionsHtml}</select>
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-3 rounded-lg border border-slate-200">
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">${f.label}</label>
+                                <input type="${f.type || 'text'}" name="${f.key}" value="${val}" class="w-full border border-slate-300 rounded p-1.5 text-sm">
+                            </div>
+                        `;
+                    }
+                } else {
+                    return `
+                        <div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <span class="block text-xs font-semibold text-slate-400 mb-0.5">${f.label}</span>
+                            <span class="font-medium text-slate-800">${val || "無 / 未填寫"}</span>
                         </div>
-                    `).join('')}
-                </form>
-            `;
-
-            document.getElementById("modalActionBtns").innerHTML = `
-                <button type="submit" form="editEmployeeForm" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition">💾 儲存修改</button>
-                <button onclick="showDetail(${currentEditingIndex})" class="px-4 py-2 bg-slate-300 hover:bg-slate-400 text-slate-700 rounded-lg text-sm font-medium">取消</button>
-            `;
+                    `;
+                }
+            }).join('');
         }
 
-        // 3. 提交修改後的資料
+        function enableEditMode() {
+            renderDetailFields(true);
+            document.getElementById("editBtn").classList.add("hidden");
+            document.getElementById("saveEditBtn").classList.remove("hidden");
+        }
+
         async function submitEditEmployee(e) {
             e.preventDefault();
             const form = document.getElementById("editEmployeeForm");
             const formData = new FormData(form);
-            const updatedObj = {};
-            formData.forEach((value, key) => updatedObj[key] = value);
+            const dataObj = {};
+            formData.forEach((value, key) => dataObj[key] = value);
+            dataObj["_action"] = "update"; // 識別為更新動作
 
-            alert("已成功更新前端資料！若串接後端 GAS，可於此處將 updatedObj 傳回 Google Sheets 進行覆寫更新。");
-            allEmployees[currentEditingIndex] = updatedObj;
-            updateStatistics(allEmployees);
-            filterData();
-            showDetail(currentEditingIndex);
+            const saveBtn = document.getElementById("saveEditBtn");
+            saveBtn.disabled = true;
+            saveBtn.innerText = "儲存中...";
+
+            try {
+                let res = await fetch(GAS_URL, {
+                    method: "POST",
+                    body: JSON.stringify(dataObj)
+                });
+                let result = await res.json();
+                if (result.status === "success") {
+                    alert("員工資料已成功更新至 Google Sheets！");
+                    closeModal();
+                    fetchData();
+                } else {
+                    alert("更新失敗：" + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("伺服器連線異常，請稍後再試。");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = "儲存變更";
+            }
+        }
+
+        async function deleteEmployee() {
+            if (!currentEditingEmp) return;
+            if (!confirm(`確定要刪除「${currentEditingEmp["姓名"]}」的完整人事記錄嗎？此動作無法復原。`)) return;
+
+            try {
+                let res = await fetch(GAS_URL, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        _action: "delete",
+                        rowIndex: currentEditingEmp._rowIndex,
+                        姓名: currentEditingEmp["姓名"]
+                    })
+                });
+                let result = await res.json();
+                if (result.status === "success") {
+                    alert("該員工資料已成功刪除！");
+                    closeModal();
+                    fetchData();
+                } else {
+                    alert("刪除失敗：" + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("伺服器連線異常，請稍後再試。");
+            }
         }
 
         function closeModal() { document.getElementById("detailModal").classList.add("hidden"); }
@@ -450,13 +552,13 @@
         function showStatsModal() { document.getElementById("statsModal").classList.remove("hidden"); }
         function closeStatsModal() { document.getElementById("statsModal").classList.add("hidden"); }
 
-        // 新增員工資料 (對應 28 欄位)
         async function submitNewEmployee(e) {
             e.preventDefault();
             const form = document.getElementById("addEmployeeForm");
             const formData = new FormData(form);
             const dataObj = {};
             formData.forEach((value, key) => dataObj[key] = value);
+            dataObj["_action"] = "create";
 
             const btn = document.getElementById("saveBtn");
             btn.disabled = true;
