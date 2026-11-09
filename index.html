@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>強祐保全 - 人事與薪資管理系統</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans">
+
+    <!-- 頂部導航列 -->
+    <header class="bg-slate-900 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">🛡️</span>
+                <h1 class="text-xl font-bold tracking-wide">強祐保全｜專業人事管理系統</h1>
+            </div>
+            <button onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
+                <span>＋</span> 新增員工資料
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        
+        <!-- 統計摘要卡片 -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-500 font-medium">總員工數</p>
+                    <p id="statTotal" class="text-2xl font-bold text-slate-800">0</p>
+                </div>
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">👥</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-500 font-medium">線上在職</p>
+                    <p id="statActive" class="text-2xl font-bold text-emerald-600">0</p>
+                </div>
+                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg">✅</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-500 font-medium">目前派駐案場數</p>
+                    <p id="statSites" class="text-2xl font-bold text-indigo-600">0</p>
+                </div>
+                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg">🏢</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-500 font-medium">法扣 / 支援低收</p>
+                    <p id="statSpecial" class="text-2xl font-bold text-amber-600">0</p>
+                </div>
+                <div class="p-3 bg-amber-50 text-amber-600 rounded-lg">⚠️</div>
+            </div>
+        </div>
+
+        <!-- 進階篩選與搜尋控制台 -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">關鍵字搜尋</label>
+                    <input type="text" id="searchKeyword" oninput="filterData()" placeholder="姓名、電話、身分證..." 
+                        class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">派駐案場</label>
+                    <select id="filterSite" onchange="filterData()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <option value="">全部案場</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">在職狀態</label>
+                    <select id="filterStatus" onchange="filterData()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <option value="">全部狀態</option>
+                        <option value="在職" selected>在職</option>
+                        <option value="離職">離職</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="resetFilters()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium py-2 rounded-lg border border-slate-300 transition">
+                        重設篩選條件
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 員工資料列表 (表格) -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider">
+                            <th class="p-3.5">服務單位 / 姓名</th>
+                            <th class="p-3.5">目前派駐案場 / 職稱</th>
+                            <th class="p-3.5">聯絡電話</th>
+                            <th class="p-3.5">約定薪資</th>
+                            <th class="p-3.5">勞健保級距</th>
+                            <th class="p-3.5">在職狀態</th>
+                            <th class="p-3.5 text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeeTableBody" class="divide-y divide-slate-100 text-sm">
+                        <tr><td colspan="7" class="p-6 text-center text-slate-500">正在與 Google Sheets 同步資料中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- 員工詳細資料 Modal -->
+    <div id="detailModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 id="modalTitle" class="text-lg font-bold text-slate-900">員工詳細資料</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
+            </div>
+            <div id="modalContent" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                <!-- 動態載入詳細欄位 -->
+            </div>
+            <div class="flex justify-end gap-3 mt-6 border-t pt-4">
+                <button onclick="closeModal()" class="px-5 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-sm font-medium">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增員工表單 Modal -->
+    <div id="addModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 class="text-lg font-bold text-slate-900">新增保全人員資料</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
+            </div>
+            <form id="addEmployeeForm" onsubmit="submitNewEmployee(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">服務單位</label>
+                    <input type="text" name="服務單位" required class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">姓名</label>
+                    <input type="text" name="姓名" required class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">目前派駐案場</label>
+                    <input type="text" name="目前派駐案場" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">職稱</label>
+                    <input type="text" name="職稱" value="保全人員" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">入職日期</label>
+                    <input type="date" name="入職日期" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">約定薪資</label>
+                    <input type="number" name="約定薪資" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">勞健保級距</label>
+                    <input type="number" name="勞健保級距" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">聯絡電話</label>
+                    <input type="tel" name="聯絡電話" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">身分證字號</label>
+                    <input type="text" name="身分證字號" class="w-full mt-1 border border-slate-300 rounded-lg p-2 uppercase">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600">在職狀態</label>
+                    <select name="在職狀態" class="w-full mt-1 border border-slate-300 rounded-lg p-2">
+                        <option value="在職">在職</option>
+                        <option value="離職">離職</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-2 flex justify-end gap-3 mt-4 border-t pt-3">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50">取消</button>
+                    <button type="submit" id="saveBtn" class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">確認儲存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript 邏輯 -->
+    <script>
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzrCMvRnAJ7rGF0XfFOSOzP26HmcX3czFDK_F5vQNILnJ_sorB1rizL_jy9Yi0ecaZM5w/exec"; // 請替換為您的 GAS 部署網址
+        let allEmployees = [];
+
+        window.onload = function() {
+            fetchData();
+        };
+
+        async function fetchData() {
+            try {
+                let response = await fetch(GAS_URL);
+                allEmployees = await response.json();
+                updateStatistics(allEmployees);
+                updateSiteFilterOptions(allEmployees);
+                filterData();
+            } catch (error) {
+                console.error("資料載入失敗", error);
+                document.getElementById("employeeTableBody").innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500 font-medium">無法讀取資料，請檢查 GAS 部署連結是否正確。</td></tr>`;
+            }
+        }
+
+        function updateStatistics(data) {
+            document.getElementById("statTotal").innerText = data.length;
+            const activeCount = data.filter(e => (e["在職狀態"] || "").trim() === "在職").length;
+            document.getElementById("statActive").innerText = activeCount;
+            const sites = new Set(data.map(e => e["目前派駐案場"]).filter(Boolean));
+            document.getElementById("statSites").innerText = sites.size;
+            const specialCount = data.filter(e => (e["法院扣薪(法扣)"] && e["法院扣薪(法扣)"] !== "無") || (e["低收入戶身分"] && e["低收入戶身分"] !== "否")).length;
+            document.getElementById("statSpecial").innerText = specialCount;
+        }
+
+        function updateSiteFilterOptions(data) {
+            const sites = [...new Set(data.map(item => item["目前派駐案場"]).filter(Boolean))];
+            const select = document.getElementById("filterSite");
+            select.innerHTML = '<option value="">全部案場</option>' + sites.map(site => `<option value="${site}">${site}</option>`).join('');
+        }
+
+        function filterData() {
+            const keyword = document.getElementById("searchKeyword").value.toLowerCase();
+            const selectedSite = document.getElementById("filterSite").value;
+            const selectedStatus = document.getElementById("filterStatus").value;
+
+            const filtered = allEmployees.filter(emp => {
+                const textMatch = Object.values(emp).some(val => String(val || "").toLowerCase().includes(keyword));
+                const siteMatch = !selectedSite || emp["目前派駐案場"] === selectedSite;
+                const statusMatch = !selectedStatus || (emp["在職狀態"] || "").trim() === selectedStatus;
+                return textMatch && siteMatch && statusMatch;
+            });
+
+            renderTable(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById("searchKeyword").value = "";
+            document.getElementById("filterSite").value = "";
+            document.getElementById("filterStatus").value = "在職";
+            filterData();
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById("employeeTableBody");
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">查無符合條件的員工記錄</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.map((emp, index) => `
+                <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                    <td class="p-3.5">
+                        <div class="font-bold text-slate-900">${emp["姓名"] || "未填寫"}</div>
+                        <div class="text-xs text-slate-500">${emp["服務單位"] || ""}</div>
+                    </td>
+                    <td class="p-3.5">
+                        <span class="inline-block bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-xs font-semibold mb-1">${emp["目前派駐案場"] || "未指派案場"}</span>
+                        <div class="text-xs text-slate-500">${emp["職稱"] || ""}</div>
+                    </td>
+                    <td class="p-3.5 text-slate-700">${emp["聯絡電話"] || "-"}</td>
+                    <td class="p-3.5 font-medium text-slate-900">${emp["約定薪資"] ? Number(emp["約定薪資"]).toLocaleString() : "-"}</td>
+                    <td class="p-3.5 text-slate-600">${emp["勞健保級距"] || "-"}</td>
+                    <td class="p-3.5">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${emp["在職狀態"] === '在職' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                            ${emp["在職狀態"] || "未知"}
+                        </span>
+                    </td>
+                    <td class="p-3.5 text-center">
+                        <button onclick='showDetail(${JSON.stringify(emp)})' class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-lg transition">
+                            詳細檔案
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showDetail(emp) {
+            const modalContent = document.getElementById("modalContent");
+            document.getElementById("modalTitle").innerText = `${emp["姓名"]} - 完整人事與投保檔案`;
+            
+            const fields = [
+                { label: "服務單位", key: "服務單位" },
+                { label: "姓名", key: "姓名" },
+                { label: "目前派駐案場", key: "目前派駐案場" },
+                { label: "職稱", key: "職稱" },
+                { label: "入職日期", key: "入職日期" },
+                { label: "離職日期", key: "離職日期" },
+                { label: "在職狀態", key: "在職狀態" },
+                { label: "約定薪資", key: "約定薪資" },
+                { label: "薪資別", key: "薪資別" },
+                { label: "聯絡電話", key: "聯絡電話" },
+                { label: "身分證字號", key: "身分證字號" },
+                { label: "出生年月日", key: "出生年月日" },
+                { label: "投保勞健保", key: "投保勞健保" },
+                { label: "勞健保級距", key: "勞健保級距" },
+                { label: "健保眷屬人數", key: "健保眷屬人數" },
+                { label: "投保團保", key: "投保團保" },
+                { label: "緊急聯絡人", key: "緊急聯絡人" },
+                { label: "關係", key: "關係" },
+                { label: "緊急聯絡人電話", key: "緊急聯絡人電話" },
+                { label: "安調狀態", key: "安調" },
+                { label: "是否有做安調", key: "是否有做安調" },
+                { label: "前科紀錄", key: "前科紀錄" },
+                { label: "法院扣薪(法扣)", key: "法院扣薪(法扣)" },
+                { label: "低收入戶身分", key: "低收入戶身分" },
+                { label: "報稅", key: "報稅" },
+                { label: "通訊地址", key: "通訊地址", full: true },
+                { label: "備註", key: "備註", full: true },
+                { label: "其它", key: "其它", full: true }
+            ];
+
+            modalContent.innerHTML = fields.map(f => `
+                <div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <span class="block text-xs font-semibold text-slate-400 mb-0.5">${f.label}</span>
+                    <span class="font-medium text-slate-800">${emp[f.key] || "無 / 未填寫"}</span>
+                </div>
+            `).join('');
+
+            document.getElementById("detailModal").classList.remove("hidden");
+        }
+
+        function closeModal() { document.getElementById("detailModal").classList.add("hidden"); }
+        function openAddModal() { document.getElementById("addModal").classList.remove("hidden"); }
+        function closeAddModal() { document.getElementById("addModal").classList.add("hidden"); }
+
+        async function submitNewEmployee(e) {
+            e.preventDefault();
+            const form = document.getElementById("addEmployeeForm");
+            const formData = new FormData(form);
+            const dataObj = {};
+            formData.forEach((value, key) => dataObj[key] = value);
+
+            const btn = document.getElementById("saveBtn");
+            btn.disabled = true;
+            btn.innerText = "寫入中...";
+
+            try {
+                let res = await fetch(GAS_URL, {
+                    method: "POST",
+                    body: JSON.stringify(dataObj)
+                });
+                let result = await res.json();
+                if (result.status === "success") {
+                    alert("新員工資料已成功寫入 Google Sheets！");
+                    closeAddModal();
+                    form.reset();
+                    fetchData();
+                } else {
+                    alert("寫入失敗：" + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("伺服器連線異常，請稍後再試。");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "確認儲存";
+            }
+        }
+    </script>
+</body>
+</html>
