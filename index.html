@@ -92,28 +92,24 @@
         </div>
     </main>
 
-    <!-- 員工詳細資料與編輯 Modal -->
+    <!-- 員工詳細資料與編輯 Modal (按鈕已置頂) -->
     <div id="detailModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-3 sm:p-4 z-50">
         <div class="bg-white rounded-2xl max-w-4xl w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div class="flex justify-between items-center mb-4 border-b pb-3">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b pb-3 gap-3">
                 <h3 id="modalTitle" class="text-base sm:text-lg font-bold text-slate-900">員工詳細資料</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl px-2">✕</button>
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                    <!-- 置頂的操作按鈕 -->
+                    <button type="button" onclick="deleteEmployee()" class="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-xs font-medium transition">刪除員工</button>
+                    <button type="button" id="editBtn" onclick="enableEditMode()" class="px-4 py-1.5 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-xs font-medium transition">編輯資料</button>
+                    <button type="button" id="saveEditBtn" onclick="document.getElementById('editEmployeeForm').requestSubmit()" class="px-4 py-1.5 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg text-xs font-medium transition hidden">儲存變更</button>
+                    <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl px-2">✕</button>
+                </div>
             </div>
             
             <form id="editEmployeeForm" onsubmit="submitEditEmployee(event)">
                 <input type="hidden" id="editRowIndex" name="rowIndex">
                 <div id="modalContent" class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-sm">
                     <!-- 動態載入 28 欄位或編輯表單 -->
-                </div>
-                <div id="modalActions" class="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6 border-t pt-4">
-                    <div class="w-full sm:w-auto">
-                        <button type="button" onclick="deleteEmployee()" class="w-full sm:w-auto px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-sm font-medium transition text-center">刪除員工</button>
-                    </div>
-                    <div class="flex gap-2 w-full sm:w-auto justify-end">
-                        <button type="button" id="editBtn" onclick="enableEditMode()" class="flex-1 sm:flex-initial px-5 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-medium transition">編輯資料</button>
-                        <button type="submit" id="saveEditBtn" class="flex-1 sm:flex-initial px-5 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg text-sm font-medium transition hidden">儲存變更</button>
-                        <button type="button" onclick="closeModal()" class="flex-1 sm:flex-initial px-5 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-sm font-medium transition">關閉</button>
-                    </div>
                 </div>
             </form>
         </div>
@@ -307,15 +303,17 @@
                         <div>
                             <div class="flex justify-between items-start mb-2.5">
                                 <div>
-                                    <h4 class="text-base font-bold text-slate-900">${emp["姓名"] || "未填寫"}</h4>
-                                    <p class="text-xs text-slate-500 font-medium">${emp["服務單位"] || "未填寫單位"}</p>
+                                    <!-- 放大 25% 姓名 (text-base -> text-lg) 與服務單位 (text-xs -> text-sm) -->
+                                    <h4 class="text-lg font-bold text-slate-900">${emp["姓名"] || "未填寫"}</h4>
+                                    <p class="text-sm text-slate-500 font-medium">${emp["服務單位"] || "未填寫單位"}</p>
                                 </div>
-                                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
                                     ${emp["在職狀態"] || "未知"}
                                 </span>
                             </div>
 
-                            <div class="space-y-1.5 text-xs text-slate-600 border-t border-slate-100 pt-2.5 mb-3">
+                            <!-- 放大 25% 內文字體 (text-xs -> text-sm) -->
+                            <div class="space-y-2 text-sm text-slate-600 border-t border-slate-100 pt-2.5 mb-3">
                                 <div class="flex justify-between">
                                     <span class="text-slate-400">派駐案場：</span>
                                     <span class="font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">${emp["目前派駐案場"] || "未指派"}</span>
@@ -408,6 +406,7 @@
             dataObj["_action"] = "update"; 
 
             const saveBtn = document.getElementById("saveEditBtn");
+            const originalText = saveBtn.innerText;
             saveBtn.disabled = true;
             saveBtn.innerText = "儲存中...";
 
@@ -429,7 +428,7 @@
                 alert("伺服器連線異常，請稍後再試。");
             } finally {
                 saveBtn.disabled = false;
-                saveBtn.innerText = "儲存變更";
+                saveBtn.innerText = originalText;
             }
         }
 
