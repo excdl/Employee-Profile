@@ -296,7 +296,7 @@
 
             let html = '';
 
-            // 1. 電腦版條列式表格 (sm 以上顯示)
+            // 1. 電腦版條列式表格 (sm 以上顯示，電話維持黑色字體但可點選撥號)
             html += `
                 <div class="hidden sm:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <table class="w-full text-left border-collapse">
@@ -320,7 +320,6 @@
                 const originalIndex = allEmployees.findIndex(item => item === emp);
                 const isActive = (emp["在職狀態"] || "").trim() === "在職";
                 
-                // 處理約定薪資數值或非數值，自動加上 $ 符號
                 let rawSalary = emp["約定薪資"];
                 let displaySalary = "-";
                 if (rawSalary !== "" && rawSalary !== undefined && rawSalary !== null && rawSalary !== "-") {
@@ -328,11 +327,11 @@
                     displaySalary = isNaN(num) ? rawSalary : "$" + num.toLocaleString();
                 }
 
-                // 處理聯絡電話（字體放大 25% 至 text-lg 並加上 tel: 超連結）
+                // 電腦版聯絡電話：字體放大至 text-lg，顏色維持黑色（文字樣式），但加上 tel: 超連結以支援點擊撥號
                 let rawPhone = emp["聯絡電話"] || "";
                 let phoneHtml = "-";
                 if (rawPhone) {
-                    phoneHtml = `<a href="tel:${rawPhone}" onclick="event.stopPropagation()" class="text-blue-600 hover:text-blue-800 hover:underline font-mono text-lg font-bold">${rawPhone}</a>`;
+                    phoneHtml = `<a href="tel:${rawPhone}" onclick="event.stopPropagation()" class="text-slate-900 hover:text-blue-600 font-mono text-lg font-bold">${rawPhone}</a>`;
                 }
 
                 html += `
