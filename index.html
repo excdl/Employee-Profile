@@ -85,7 +85,7 @@
             <span id="resultCount" class="text-xs text-slate-400">共 0 筆</span>
         </div>
         
-        <!-- 員工清單容器 (支援手機卡片 / 電腦表格切換) -->
+        <!-- 員工清單容器 -->
         <div id="employeeContainer">
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center text-slate-500">
                 正在與 Google Sheets 同步資料中...
@@ -294,7 +294,6 @@
                 return;
             }
 
-            // 響應式切換：手機版維持卡片檢視 (grid)，電腦版 (sm以上) 呈現條列式表格 (table)
             let html = '';
 
             // 1. 電腦版條列式表格 (sm 以上顯示)
@@ -302,43 +301,51 @@
                 <div class="hidden sm:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider">
-                                <th class="py-3 px-4">服務單位</th>
-                                <th class="py-3 px-4">姓名</th>
-                                <th class="py-3 px-4">目前派駐案場</th>
-                                <th class="py-3 px-4">職稱</th>
-                                <th class="py-3 px-4">聯絡電話</th>
-                                <th class="py-3 px-4 text-right">約定薪資</th>
-                                <th class="py-3 px-4 text-right">勞健保級距</th>
-                                <th class="py-3 px-4 text-center">狀態</th>
-                                <th class="py-3 px-4 text-center">操作</th>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-sm font-bold text-slate-600 uppercase tracking-wider">
+                                <th class="py-3.5 px-4">服務單位</th>
+                                <th class="py-3.5 px-4">姓名</th>
+                                <th class="py-3.5 px-4">目前派駐案場</th>
+                                <th class="py-3.5 px-4">職稱</th>
+                                <th class="py-3.5 px-4">聯絡電話</th>
+                                <th class="py-3.5 px-4 text-right">約定薪資</th>
+                                <th class="py-3.5 px-4 text-right">勞健保級距</th>
+                                <th class="py-3.5 px-4 text-center">狀態</th>
+                                <th class="py-3.5 px-4 text-center">操作</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 text-sm">
+                        <tbody class="divide-y divide-slate-100 text-base">
             `;
 
             data.forEach((emp) => {
                 const originalIndex = allEmployees.findIndex(item => item === emp);
                 const isActive = (emp["在職狀態"] || "").trim() === "在職";
+                
+                // 處理約定薪資數值或非數值，自動加上 $ 符號
+                let rawSalary = emp["約定薪資"];
+                let displaySalary = "-";
+                if (rawSalary !== "" && rawSalary !== undefined && rawSalary !== null && rawSalary !== "-") {
+                    let num = Number(rawSalary);
+                    displaySalary = isNaN(num) ? rawSalary : "$" + num.toLocaleString();
+                }
 
                 html += `
                     <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="showDetail(${originalIndex})">
-                        <td class="py-3 px-4 text-slate-500 font-medium">${emp["服務單位"] || "-"}</td>
-                        <td class="py-3 px-4 font-bold text-slate-900">${emp["姓名"] || "未填寫"}</td>
-                        <td class="py-3 px-4">
-                            <span class="font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded text-xs">${emp["目前派駐案場"] || "未指派"}</span>
+                        <td class="py-3.5 px-4 text-slate-500 font-medium">${emp["服務單位"] || "-"}</td>
+                        <td class="py-3.5 px-4 font-bold text-slate-900">${emp["姓名"] || "未填寫"}</td>
+                        <td class="py-3.5 px-4">
+                            <span class="font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded text-sm">${emp["目前派駐案場"] || "未指派"}</span>
                         </td>
-                        <td class="py-3 px-4 text-slate-600">${emp["職稱"] || "-"}</td>
-                        <td class="py-3 px-4 text-slate-700 font-mono text-xs">${emp["聯絡電話"] || "-"}</td>
-                        <td class="py-3 px-4 text-right font-medium text-slate-900">${emp["約定薪資"] ? Number(emp["約定薪資"]).toLocaleString() : "-"}</td>
-                        <td class="py-3 px-4 text-right text-slate-600">${emp["勞健保級距"] || "-"}</td>
-                        <td class="py-3 px-4 text-center">
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                        <td class="py-3.5 px-4 text-slate-600">${emp["職稱"] || "-"}</td>
+                        <td class="py-3.5 px-4 text-slate-700 font-mono text-sm">${emp["聯絡電話"] || "-"}</td>
+                        <td class="py-3.5 px-4 text-right font-medium text-slate-900">${displaySalary}</td>
+                        <td class="py-3.5 px-4 text-right text-slate-600">${emp["勞健保級距"] || "-"}</td>
+                        <td class="py-3.5 px-4 text-center">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
                                 ${emp["在職狀態"] || "未知"}
                             </span>
                         </td>
-                        <td class="py-3 px-4 text-center" onclick="event.stopPropagation()">
-                            <button onclick="showDetail(${originalIndex})" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded transition">
+                        <td class="py-3.5 px-4 text-center" onclick="event.stopPropagation()">
+                            <button onclick="showDetail(${originalIndex})" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">
                                 檢視 ➔
                             </button>
                         </td>
@@ -353,13 +360,18 @@
             `;
 
             // 2. 手機版維持卡片檢視 (sm 以下顯示)
-            html += `
-                <div class="sm:hidden grid grid-cols-1 gap-3.5">
-            `;
+            html += `<div class="sm:hidden grid grid-cols-1 gap-3.5">`;
 
             data.forEach((emp) => {
                 const originalIndex = allEmployees.findIndex(item => item === emp);
                 const isActive = (emp["在職狀態"] || "").trim() === "在職";
+                
+                let rawSalary = emp["約定薪資"];
+                let displaySalary = "-";
+                if (rawSalary !== "" && rawSalary !== undefined && rawSalary !== null && rawSalary !== "-") {
+                    let num = Number(rawSalary);
+                    displaySalary = isNaN(num) ? rawSalary : "$" + num.toLocaleString();
+                }
 
                 html += `
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
@@ -389,7 +401,7 @@
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-slate-400">約定薪資：</span>
-                                    <span class="font-medium text-slate-900">${emp["約定薪資"] ? Number(emp["約定薪資"]).toLocaleString() : "-"}</span>
+                                    <span class="font-medium text-slate-900">${displaySalary}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-slate-400">勞健保級距：</span>
@@ -490,7 +502,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                alert("伺服器連線異常請稍後再試。");
+                alert("伺服器連線異常，請稍後再試。");
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerText = originalText;
@@ -506,8 +518,9 @@
                     method: "POST",
                     body: JSON.stringify({
                         _action: "delete",
-                        rowIndex: currentEditingEmp._rowIndex,
-                        姓名: currentEditingEmp["姓名"]
+                        身分證字號: currentEditingEmp["身分證字號"] || "",
+                        姓名: currentEditingEmp["姓名"] || "",
+                        聯絡電話: currentEditingEmp["聯絡電話"] || ""
                     })
                 });
                 let result = await res.json();
