@@ -38,8 +38,8 @@
                 <h1 class="text-base sm:text-xl font-bold tracking-wide">強祐保全｜人事管理</h1>
             </div>
             <div class="flex items-center gap-2">
-                <!-- 帳號權限設定按鈕 (可依需求或全權顯示) -->
-                <button id="manageUserBtn" onclick="openUserManager()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium px-3 py-1.5 rounded-lg border border-slate-700 text-xs transition flex items-center gap-1">
+                <!-- 帳號權限設定按鈕 (依後端回傳設定USER=="Y"時動態顯示) -->
+                <button id="manageUserBtn" onclick="openUserManager()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium px-3 py-1.5 rounded-lg border border-slate-700 text-xs transition hidden items-center gap-1">
                     <span>⚙️</span> 使用者管理
                 </button>
                 <!-- 新增員工按鈕（依權限動態顯示） -->
@@ -147,6 +147,7 @@
                     <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="permAdd" name="新增" value="Y" class="w-4 h-4 text-blue-600 rounded"> 允許新增員工</label>
                     <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="permEdit" name="編輯" value="Y" class="w-4 h-4 text-blue-600 rounded"> 允許編輯資料</label>
                     <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="permDel" name="刪除" value="Y" class="w-4 h-4 text-blue-600 rounded"> 允許刪除員工</label>
+                    <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="permManageUser" name="設定USER" value="Y" class="w-4 h-4 text-blue-600 rounded"> 允許設定使用者</label>
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" id="cancelUserEditBtn" onclick="resetUserForm()" class="px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-xs font-medium hidden">取消修改</button>
@@ -248,10 +249,10 @@
 
     <!-- JavaScript 邏輯 -->
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzNB4S1wYN5JYrYVGkn6FScm1SC5TxS47iGV9S6h0j9rECoDh4U7IsZbHYoRfHT50fQhA/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyt_m4yTesreZbk2PwDMO7hMpn95KW9EbNzDLm25_G6NB4Y4PLupg3RziluIYdATODJtw/exec"; 
         let allEmployees = [];
         let currentEditingEmp = null;
-        let currentUserPermissions = { canAdd: false, canEdit: false, canDelete: false };
+        let currentUserPermissions = { canAdd: false, canEdit: false, canDelete: false, canManageUser: false };
 
         const fieldConfigs = [
             { label: "服務單位", key: "服務單位" },
@@ -306,12 +307,18 @@
                     currentUserPermissions = {
                         canAdd: String(result.permissions?.新增 || "").trim().toUpperCase() === "Y",
                         canEdit: String(result.permissions?.編輯 || "").trim().toUpperCase() === "Y",
-                        canDelete: String(result.permissions?.刪除 || "").trim().toUpperCase() === "Y"
+                        canDelete: String(result.permissions?.刪除 || "").trim().toUpperCase() === "Y",
+                        canManageUser: String(result.permissions?.設定USER || "").trim().toUpperCase() === "Y"
                     };
 
                     if (currentUserPermissions.canAdd) {
                         document.getElementById("navAddBtn").classList.remove("hidden");
                         document.getElementById("navAddBtn").classList.add("flex");
+                    }
+
+                    if (currentUserPermissions.canManageUser) {
+                        document.getElementById("manageUserBtn").classList.remove("hidden");
+                        document.getElementById("manageUserBtn").classList.add("flex");
                     }
 
                     document.getElementById("loginScreen").classList.add("hidden");
@@ -362,6 +369,7 @@
                                 <th class="p-2.5 text-center">新增</th>
                                 <th class="p-2.5 text-center">編輯</th>
                                 <th class="p-2.5 text-center">刪除</th>
+                                <th class="p-2.5 text-center">設定USER</th>
                                 <th class="p-2.5 text-center">操作</th>
                             </tr>
                         </thead>
@@ -377,6 +385,7 @@
                             <td class="p-2.5 text-center">${u["新增"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
                             <td class="p-2.5 text-center">${u["編輯"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
                             <td class="p-2.5 text-center">${u["刪除"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
+                            <td class="p-2.5 text-center">${u["設定USER"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
                             <td class="p-2.5 text-center flex justify-center gap-1">
                                 <button onclick='editUser(${JSON.stringify(u)})' class="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded font-semibold">修改</button>
                                 <button onclick='deleteUser("${rowId}", "${u["使用者"]}")' class="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded font-semibold">刪除</button>
@@ -400,6 +409,7 @@
             document.getElementById("permAdd").checked = (u["新增"] === "Y");
             document.getElementById("permEdit").checked = (u["編輯"] === "Y");
             document.getElementById("permDel").checked = (u["刪除"] === "Y");
+            document.getElementById("permManageUser").checked = (u["設定USER"] === "Y");
 
             document.getElementById("userFormTitle").innerText = `修改使用者帳號 (${u["使用者"]})`;
             document.getElementById("saveUserBtn").innerText = "確認修改";
@@ -424,7 +434,8 @@
                 登錄密碼: document.getElementById("userPwdInput").value,
                 新增: document.getElementById("permAdd").checked ? "Y" : "N",
                 編輯: document.getElementById("permEdit").checked ? "Y" : "N",
-                刪除: document.getElementById("permDel").checked ? "Y" : "N"
+                刪除: document.getElementById("permDel").checked ? "Y" : "N",
+                設定USER: document.getElementById("permManageUser").checked ? "Y" : "N"
             };
 
             const btn = document.getElementById("saveUserBtn");
