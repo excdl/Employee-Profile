@@ -360,41 +360,45 @@
                     return;
                 }
 
+                // 外層加入 overflow-x-auto，確保手機版可以左右滑動查看，避免按鈕被切掉
                 let html = `
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
-                                <th class="p-2.5">使用者</th>
-                                <th class="p-2.5">密碼</th>
-                                <th class="p-2.5 text-center">新增</th>
-                                <th class="p-2.5 text-center">編輯</th>
-                                <th class="p-2.5 text-center">刪除</th>
-                                <th class="p-2.5 text-center">設定USER</th>
-                                <th class="p-2.5 text-center">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+                                    <th class="p-2 sm:p-2.5">使用者</th>
+                                    <th class="p-2 sm:p-2.5">密碼</th>
+                                    <th class="p-2 sm:p-2.5 text-center">新增</th>
+                                    <th class="p-2 sm:p-2.5 text-center">編輯</th>
+                                    <th class="p-2 sm:p-2.5 text-center">刪除</th>
+                                    <th class="p-2 sm:p-2.5 text-center">設定USER</th>
+                                    <th class="p-2 sm:p-2.5 text-center">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
                 `;
 
                 users.forEach((u, index) => {
                     const rowId = u["ID"] || (index + 2);
                     html += `
                         <tr class="hover:bg-slate-50">
-                            <td class="p-2.5 font-bold text-slate-900">${u["使用者"] || "-"}</td>
-                            <td class="p-2.5 font-mono text-slate-600">${u["登錄密碼"] || "-"}</td>
-                            <td class="p-2.5 text-center">${u["新增"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
-                            <td class="p-2.5 text-center">${u["編輯"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
-                            <td class="p-2.5 text-center">${u["刪除"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
-                            <td class="p-2.5 text-center">${u["設定USER"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
-                            <td class="p-2.5 text-center flex justify-center gap-1">
-                                <button onclick='editUser(${JSON.stringify(u)})' class="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded font-semibold">修改</button>
-                                <button onclick='deleteUser("${rowId}", "${u["使用者"]}")' class="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded font-semibold">刪除</button>
+                            <td class="p-2 sm:p-2.5 font-bold text-slate-900">${u["使用者"] || "-"}</td>
+                            <td class="p-2 sm:p-2.5 font-mono text-slate-600">${u["登錄密碼"] || "-"}</td>
+                            <td class="p-2 sm:p-2.5 text-center">${u["新增"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
+                            <td class="p-2 sm:p-2.5 text-center">${u["編輯"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
+                            <td class="p-2 sm:p-2.5 text-center">${u["刪除"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
+                            <td class="p-2 sm:p-2.5 text-center">${u["設定USER"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
+                            <td class="p-2 sm:p-2.5 text-center">
+                                <div class="inline-flex items-center gap-1">
+                                    <button onclick='editUser(${JSON.stringify(u)})' class="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded font-semibold text-[11px]">修改</button>
+                                    <button onclick='deleteUser("${rowId}", "${u["使用者"]}")' class="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded font-semibold text-[11px]">刪除</button>
+                                </div>
                             </td>
                         </tr>
                     `;
                 });
 
-                html += `</tbody></table>`;
+                html += `</tbody></table></div>`;
                 container.innerHTML = html;
             } catch (err) {
                 console.error(err);
