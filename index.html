@@ -24,7 +24,7 @@
 
     <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         
-        <!-- 統計摘要卡片（改為 3 個並排） -->
+        <!-- 統計摘要卡片（3 個並排） -->
         <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
             <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
                 <div>
@@ -85,8 +85,9 @@
             <span id="resultCount" class="text-xs text-slate-400">共 0 筆</span>
         </div>
         
-        <div id="employeeCardContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center text-slate-500 sm:col-span-2 lg:col-span-3">
+        <!-- 員工清單容器 (支援手機卡片 / 電腦表格切換) -->
+        <div id="employeeContainer">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center text-slate-500">
                 正在與 Google Sheets 同步資料中...
             </div>
         </div>
@@ -98,7 +99,6 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b pb-3 gap-3">
                 <h3 id="modalTitle" class="text-base sm:text-lg font-bold text-slate-900">員工詳細資料</h3>
                 <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                    <!-- 置頂的操作按鈕 -->
                     <button type="button" onclick="deleteEmployee()" class="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-xs font-medium transition">刪除員工</button>
                     <button type="button" id="editBtn" onclick="enableEditMode()" class="px-4 py-1.5 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-xs font-medium transition">編輯資料</button>
                     <button type="button" id="saveEditBtn" onclick="document.getElementById('editEmployeeForm').requestSubmit()" class="px-4 py-1.5 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg text-xs font-medium transition hidden">儲存變更</button>
@@ -228,8 +228,8 @@
                 filterData();
             } catch (error) {
                 console.error("資料載入失敗", error);
-                document.getElementById("employeeCardContainer").innerHTML = `
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-red-200 text-center text-red-500 sm:col-span-2 lg:col-span-3 font-medium">
+                document.getElementById("employeeContainer").innerHTML = `
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-red-200 text-center text-red-500 font-medium">
                         無法讀取資料，請檢查 GAS 部署連結是否正確。
                     </div>`;
             }
@@ -272,7 +272,7 @@
                 return textMatch && siteMatch && statusMatch;
             });
 
-            renderCards(filtered);
+            renderView(filtered);
         }
 
         function resetFilters() {
@@ -282,28 +282,90 @@
             filterData();
         }
 
-        function renderCards(data) {
-            const container = document.getElementById("employeeCardContainer");
+        function renderView(data) {
+            const container = document.getElementById("employeeContainer");
             document.getElementById("resultCount").innerText = `共 ${data.length} 筆`;
             
             if (data.length === 0) {
                 container.innerHTML = `
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center text-slate-400 sm:col-span-2 lg:col-span-3">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center text-slate-400">
                         查無符合條件的員工記錄
                     </div>`;
                 return;
             }
 
-            container.innerHTML = data.map((emp) => {
+            // 響應式切換：手機版維持卡片檢視 (grid)，電腦版 (sm以上) 呈現條列式表格 (table)
+            let html = '';
+
+            // 1. 電腦版條列式表格 (sm 以上顯示)
+            html += `
+                <div class="hidden sm:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider">
+                                <th class="py-3 px-4">服務單位</th>
+                                <th class="py-3 px-4">姓名</th>
+                                <th class="py-3 px-4">目前派駐案場</th>
+                                <th class="py-3 px-4">職稱</th>
+                                <th class="py-3 px-4">聯絡電話</th>
+                                <th class="py-3 px-4 text-right">約定薪資</th>
+                                <th class="py-3 px-4 text-right">勞健保級距</th>
+                                <th class="py-3 px-4 text-center">狀態</th>
+                                <th class="py-3 px-4 text-center">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm">
+            `;
+
+            data.forEach((emp) => {
                 const originalIndex = allEmployees.findIndex(item => item === emp);
                 const isActive = (emp["在職狀態"] || "").trim() === "在職";
-                
-                return `
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition">
+
+                html += `
+                    <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="showDetail(${originalIndex})">
+                        <td class="py-3 px-4 text-slate-500 font-medium">${emp["服務單位"] || "-"}</td>
+                        <td class="py-3 px-4 font-bold text-slate-900">${emp["姓名"] || "未填寫"}</td>
+                        <td class="py-3 px-4">
+                            <span class="font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded text-xs">${emp["目前派駐案場"] || "未指派"}</span>
+                        </td>
+                        <td class="py-3 px-4 text-slate-600">${emp["職稱"] || "-"}</td>
+                        <td class="py-3 px-4 text-slate-700 font-mono text-xs">${emp["聯絡電話"] || "-"}</td>
+                        <td class="py-3 px-4 text-right font-medium text-slate-900">${emp["約定薪資"] ? Number(emp["約定薪資"]).toLocaleString() : "-"}</td>
+                        <td class="py-3 px-4 text-right text-slate-600">${emp["勞健保級距"] || "-"}</td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                                ${emp["在職狀態"] || "未知"}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-center" onclick="event.stopPropagation()">
+                            <button onclick="showDetail(${originalIndex})" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded transition">
+                                檢視 ➔
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            // 2. 手機版維持卡片檢視 (sm 以下顯示)
+            html += `
+                <div class="sm:hidden grid grid-cols-1 gap-3.5">
+            `;
+
+            data.forEach((emp) => {
+                const originalIndex = allEmployees.findIndex(item => item === emp);
+                const isActive = (emp["在職狀態"] || "").trim() === "在職";
+
+                html += `
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                         <div>
                             <div class="flex justify-between items-start mb-2.5">
                                 <div>
-                                    <!-- 放大 25% 姓名 (text-base -> text-lg) 與服務單位 (text-xs -> text-sm) -->
                                     <h4 class="text-lg font-bold text-slate-900">${emp["姓名"] || "未填寫"}</h4>
                                     <p class="text-sm text-slate-500 font-medium">${emp["服務單位"] || "未填寫單位"}</p>
                                 </div>
@@ -312,7 +374,6 @@
                                 </span>
                             </div>
 
-                            <!-- 放大 25% 內文字體 (text-xs -> text-sm) -->
                             <div class="space-y-2 text-sm text-slate-600 border-t border-slate-100 pt-2.5 mb-3">
                                 <div class="flex justify-between">
                                     <span class="text-slate-400">派駐案場：</span>
@@ -338,13 +399,17 @@
                         </div>
 
                         <div class="pt-2 border-t border-slate-100 flex justify-end">
-                            <button onclick='showDetail(${originalIndex})' class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-2 rounded-lg transition text-center">
+                            <button onclick="showDetail(${originalIndex})" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-2 rounded-lg transition text-center">
                                 檢視完整檔案與編輯 ➔
                             </button>
                         </div>
                     </div>
                 `;
-            }).join('');
+            });
+
+            html += `</div>`;
+
+            container.innerHTML = html;
         }
 
         function showDetail(index) {
@@ -425,7 +490,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                alert("伺服器連線異常，請稍後再試。");
+                alert("伺服器連線異常請稍後再試。");
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerText = originalText;
