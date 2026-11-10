@@ -144,6 +144,7 @@
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-4 pt-1 text-sm font-medium text-slate-700">
+                    <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="permView" name="檢視" value="Y" class="w-4 h-4 text-blue-600 rounded"> 允許檢視詳細檔案</label>
                     <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="permAdd" name="新增" value="Y" class="w-4 h-4 text-blue-600 rounded"> 允許新增員工</label>
                     <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="permEdit" name="編輯" value="Y" class="w-4 h-4 text-blue-600 rounded"> 允許編輯資料</label>
                     <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="permDel" name="刪除" value="Y" class="w-4 h-4 text-blue-600 rounded"> 允許刪除員工</label>
@@ -252,7 +253,7 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyOlTrhVjIwWf_QfFQyj29KEasZhU86TqZTar4-PuzzoZuF5AvXMf952oqAYud5uokFmg/exec"; 
         let allEmployees = [];
         let currentEditingEmp = null;
-        let currentUserPermissions = { canAdd: false, canEdit: false, canDelete: false, canManageUser: false };
+        let currentUserPermissions = { canView: false, canAdd: false, canEdit: false, canDelete: false, canManageUser: false };
 
         const fieldConfigs = [
             { label: "服務單位", key: "服務單位" },
@@ -305,6 +306,7 @@
 
                 if (result.status === "success") {
                     currentUserPermissions = {
+                        canView: String(result.permissions?.檢視 || "").trim().toUpperCase() === "Y",
                         canAdd: String(result.permissions?.新增 || "").trim().toUpperCase() === "Y",
                         canEdit: String(result.permissions?.編輯 || "").trim().toUpperCase() === "Y",
                         canDelete: String(result.permissions?.刪除 || "").trim().toUpperCase() === "Y",
@@ -360,7 +362,6 @@
                     return;
                 }
 
-                // 外層加入 overflow-x-auto，確保手機版可以左右滑動查看，避免按鈕被切掉
                 let html = `
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
@@ -368,6 +369,7 @@
                                 <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
                                     <th class="p-2 sm:p-2.5">使用者</th>
                                     <th class="p-2 sm:p-2.5">密碼</th>
+                                    <th class="p-2 sm:p-2.5 text-center">檢視</th>
                                     <th class="p-2 sm:p-2.5 text-center">新增</th>
                                     <th class="p-2 sm:p-2.5 text-center">編輯</th>
                                     <th class="p-2 sm:p-2.5 text-center">刪除</th>
@@ -384,6 +386,7 @@
                         <tr class="hover:bg-slate-50">
                             <td class="p-2 sm:p-2.5 font-bold text-slate-900">${u["使用者"] || "-"}</td>
                             <td class="p-2 sm:p-2.5 font-mono text-slate-600">${u["登錄密碼"] || "-"}</td>
+                            <td class="p-2 sm:p-2.5 text-center">${u["檢視"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
                             <td class="p-2 sm:p-2.5 text-center">${u["新增"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
                             <td class="p-2 sm:p-2.5 text-center">${u["編輯"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
                             <td class="p-2 sm:p-2.5 text-center">${u["刪除"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
@@ -410,6 +413,7 @@
             document.getElementById("userId").value = u["ID"] || "";
             document.getElementById("userNameInput").value = u["使用者"] || "";
             document.getElementById("userPwdInput").value = u["登錄密碼"] || "";
+            document.getElementById("permView").checked = (u["檢視"] === "Y");
             document.getElementById("permAdd").checked = (u["新增"] === "Y");
             document.getElementById("permEdit").checked = (u["編輯"] === "Y");
             document.getElementById("permDel").checked = (u["刪除"] === "Y");
@@ -436,6 +440,7 @@
                 ID: idVal || new Date().getTime().toString(),
                 使用者: document.getElementById("userNameInput").value,
                 登錄密碼: document.getElementById("userPwdInput").value,
+                檢視: document.getElementById("permView").checked ? "Y" : "N",
                 新增: document.getElementById("permAdd").checked ? "Y" : "N",
                 編輯: document.getElementById("permEdit").checked ? "Y" : "N",
                 刪除: document.getElementById("permDel").checked ? "Y" : "N",
@@ -594,8 +599,13 @@
                 let rawPhone = emp["聯絡電話"] || "-";
                 let phoneHtml = `<span class="text-slate-900 font-mono text-lg font-bold">${rawPhone}</span>`;
 
+                // 依據是否具有檢視權限決定按鈕呈現
+                let actionBtnHtml = currentUserPermissions.canView 
+                    ? `<button onclick="showDetail(${originalIndex})" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">檢視 ➔</button>`
+                    : `<span class="text-xs text-slate-400">僅限前台</span>`;
+
                 html += `
-                    <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="showDetail(${originalIndex})">
+                    <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="${currentUserPermissions.canView ? `showDetail(${originalIndex})` : ''}">
                         <td class="py-3.5 px-4 text-slate-500 font-medium">${emp["服務單位"] || "-"}</td>
                         <td class="py-3.5 px-4 font-bold text-slate-900">${emp["姓名"] || "未填寫"}</td>
                         <td class="py-3.5 px-4">
@@ -611,9 +621,7 @@
                             </span>
                         </td>
                         <td class="py-3.5 px-4 text-center" onclick="event.stopPropagation()">
-                            <button onclick="showDetail(${originalIndex})" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">
-                                檢視 ➔
-                            </button>
+                            ${actionBtnHtml}
                         </td>
                     </tr>
                 `;
@@ -637,6 +645,10 @@
 
                 let rawPhone = emp["聯絡電話"] || "";
                 let phoneHtml = rawPhone ? `<a href="tel:${rawPhone}" class="text-blue-600 hover:underline font-mono text-lg font-bold">${rawPhone}</a>` : "-";
+
+                let mobileBtnHtml = currentUserPermissions.canView
+                    ? `<button onclick="showDetail(${originalIndex})" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-2 rounded-lg transition text-center">檢視完整檔案與編輯 ➔</button>`
+                    : `<div class="text-center text-xs text-slate-400 py-1.5">僅限前台列表檢視</div>`;
 
                 html += `
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
@@ -674,10 +686,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="pt-2 border-t border-slate-100 flex justify-end">
-                            <button onclick="showDetail(${originalIndex})" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-2 rounded-lg transition text-center">
-                                檢視完整檔案與編輯 ➔
-                            </button>
+                        <div class="pt-2 border-t border-slate-100">
+                            ${mobileBtnHtml}
                         </div>
                     </div>
                 `;
@@ -688,6 +698,11 @@
         }
 
         function showDetail(index) {
+            if (!currentUserPermissions.canView) {
+                alert("您目前無權限檢視完整詳細檔案！");
+                return;
+            }
+
             currentEditingEmp = { ...allEmployees[index], _rowIndex: index + 2 }; 
             document.getElementById("editRowIndex").value = currentEditingEmp._rowIndex;
             document.getElementById("modalTitle").innerText = `${currentEditingEmp["姓名"]} - 完整人事與投保檔案`;
@@ -808,3 +823,4 @@
     </script>
 </body>
 </html>
+
