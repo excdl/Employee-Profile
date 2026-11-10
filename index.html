@@ -37,10 +37,16 @@
                 <span class="text-xl">🛡️</span>
                 <h1 class="text-base sm:text-xl font-bold tracking-wide">強祐保全｜人事管理</h1>
             </div>
-            <!-- 新增員工按鈕（依權限動態顯示） -->
-            <button id="navAddBtn" onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-3.5 py-1.5 rounded-lg shadow text-sm transition hidden items-center gap-1.5">
-                <span>＋</span> 新增員工
-            </button>
+            <div class="flex items-center gap-2">
+                <!-- 帳號權限設定按鈕 (可依需求或全權顯示) -->
+                <button id="manageUserBtn" onclick="openUserManager()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium px-3 py-1.5 rounded-lg border border-slate-700 text-xs transition flex items-center gap-1">
+                    <span>⚙️</span> 使用者管理
+                </button>
+                <!-- 新增員工按鈕（依權限動態顯示） -->
+                <button id="navAddBtn" onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-3.5 py-1.5 rounded-lg shadow text-sm transition hidden items-center gap-1.5">
+                    <span>＋</span> 新增員工
+                </button>
+            </div>
         </div>
     </header>
 
@@ -115,15 +121,56 @@
         </div>
     </main>
 
+    <!-- 👤 使用者權限設定管理 Modal -->
+    <div id="userManagerModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-3 sm:p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 class="text-base sm:text-lg font-bold text-slate-900">⚙️ 系統使用者與權限管理</h3>
+                <button onclick="closeUserManager()" class="text-slate-400 hover:text-slate-600 font-bold text-xl px-2">✕</button>
+            </div>
+
+            <!-- 新增/編輯使用者表單 -->
+            <form id="userForm" onsubmit="submitUserForm(event)" class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-5 space-y-3">
+                <input type="hidden" id="userId" name="ID">
+                <h4 id="userFormTitle" class="text-xs font-bold text-slate-700 uppercase tracking-wider">新增使用者帳號</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">使用者名稱</label>
+                        <input type="text" id="userNameInput" name="使用者" required placeholder="例如：管理員A" class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">登錄密碼</label>
+                        <input type="text" id="userPwdInput" name="登錄密碼" required placeholder="設定密碼..." class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white">
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-4 pt-1 text-sm font-medium text-slate-700">
+                    <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="permAdd" name="新增" value="Y" class="w-4 h-4 text-blue-600 rounded"> 允許新增員工</label>
+                    <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="permEdit" name="編輯" value="Y" class="w-4 h-4 text-blue-600 rounded"> 允許編輯資料</label>
+                    <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="permDel" name="刪除" value="Y" class="w-4 h-4 text-blue-600 rounded"> 允許刪除員工</label>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" id="cancelUserEditBtn" onclick="resetUserForm()" class="px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-xs font-medium hidden">取消修改</button>
+                    <button type="submit" id="saveUserBtn" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium">儲存使用者</button>
+                </div>
+            </form>
+
+            <!-- 現有使用者列表 -->
+            <div class="space-y-2">
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">現有授權帳號列表</h4>
+                <div id="userListContainer" class="border border-slate-200 rounded-xl overflow-hidden">
+                    <div class="p-4 text-center text-slate-400 text-sm">載入中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 員工詳細資料與編輯 Modal -->
     <div id="detailModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden flex items-center justify-center p-3 sm:p-4 z-50">
         <div class="bg-white rounded-2xl max-w-4xl w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b pb-3 gap-3">
                 <h3 id="modalTitle" class="text-base sm:text-lg font-bold text-slate-900">員工詳細資料</h3>
                 <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                    <!-- 刪除按鈕（依權限動態顯示） -->
                     <button type="button" id="modalDeleteBtn" onclick="deleteEmployee()" class="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-xs font-medium transition hidden">刪除員工</button>
-                    <!-- 編輯/儲存按鈕（依權限動態顯示） -->
                     <button type="button" id="editBtn" onclick="enableEditMode()" class="px-4 py-1.5 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-xs font-medium transition hidden">編輯資料</button>
                     <button type="button" id="saveEditBtn" onclick="document.getElementById('editEmployeeForm').requestSubmit()" class="px-4 py-1.5 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg text-xs font-medium transition hidden">儲存變更</button>
                     <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl px-2">✕</button>
@@ -132,9 +179,7 @@
             
             <form id="editEmployeeForm" onsubmit="submitEditEmployee(event)">
                 <input type="hidden" id="editRowIndex" name="rowIndex">
-                <div id="modalContent" class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-sm">
-                    <!-- 動態載入欄位或編輯表單 -->
-                </div>
+                <div id="modalContent" class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-sm"></div>
             </form>
         </div>
     </div>
@@ -239,7 +284,7 @@
             { label: "其它", key: "其它", full: true }
         ];
 
-        // 🔐 處理密碼登入驗證
+        // 🔐 處理登入驗證
         async function handleLogin(e) {
             e.preventDefault();
             const password = document.getElementById("loginPassword").value.trim();
@@ -258,20 +303,17 @@
                 let result = await res.json();
 
                 if (result.status === "success") {
-                    // 記錄權限 (判斷是否為 "Y"，大小寫不拘)
                     currentUserPermissions = {
                         canAdd: String(result.permissions?.新增 || "").trim().toUpperCase() === "Y",
                         canEdit: String(result.permissions?.編輯 || "").trim().toUpperCase() === "Y",
                         canDelete: String(result.permissions?.刪除 || "").trim().toUpperCase() === "Y"
                     };
 
-                    // 依權限顯示/隱藏頂部新增按鈕
                     if (currentUserPermissions.canAdd) {
                         document.getElementById("navAddBtn").classList.remove("hidden");
                         document.getElementById("navAddBtn").classList.add("flex");
                     }
 
-                    // 隱藏登入遮罩，開始載入主資料
                     document.getElementById("loginScreen").classList.add("hidden");
                     fetchData();
                 } else {
@@ -285,6 +327,143 @@
             } finally {
                 loginBtn.disabled = false;
                 loginBtn.innerText = "驗證登入";
+            }
+        }
+
+        // ⚙️ 開啟/關閉使用者管理彈跳窗
+        async function openUserManager() {
+            document.getElementById("userManagerModal").classList.remove("hidden");
+            loadUserList();
+        }
+        function closeUserManager() {
+            document.getElementById("userManagerModal").classList.add("hidden");
+            resetUserForm();
+        }
+
+        // 載入 USER 列表
+        async function loadUserList() {
+            const container = document.getElementById("userListContainer");
+            container.innerHTML = `<div class="p-4 text-center text-slate-400 text-sm">正在載入帳號清單...</div>`;
+            try {
+                let res = await fetch(GAS_URL + "?action=getUsers");
+                let users = await res.json();
+
+                if (!Array.isArray(users) || users.length === 0) {
+                    container.innerHTML = `<div class="p-4 text-center text-slate-400 text-sm">目前無任何使用者記錄</div>`;
+                    return;
+                }
+
+                let html = `
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+                                <th class="p-2.5">使用者</th>
+                                <th class="p-2.5">密碼</th>
+                                <th class="p-2.5 text-center">新增</th>
+                                <th class="p-2.5 text-center">編輯</th>
+                                <th class="p-2.5 text-center">刪除</th>
+                                <th class="p-2.5 text-center">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                `;
+
+                users.forEach((u, index) => {
+                    const rowId = u["ID"] || (index + 2);
+                    html += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-2.5 font-bold text-slate-900">${u["使用者"] || "-"}</td>
+                            <td class="p-2.5 font-mono text-slate-600">${u["登錄密碼"] || "-"}</td>
+                            <td class="p-2.5 text-center">${u["新增"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
+                            <td class="p-2.5 text-center">${u["編輯"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
+                            <td class="p-2.5 text-center">${u["刪除"] === 'Y' ? '<span class="text-emerald-600 font-bold">✔</span>' : '-'}</td>
+                            <td class="p-2.5 text-center flex justify-center gap-1">
+                                <button onclick='editUser(${JSON.stringify(u)})' class="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded font-semibold">修改</button>
+                                <button onclick='deleteUser("${rowId}", "${u["使用者"]}")' class="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded font-semibold">刪除</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table>`;
+                container.innerHTML = html;
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<div class="p-4 text-center text-rose-500 text-sm">載入帳號清單失敗</div>`;
+            }
+        }
+
+        function editUser(u) {
+            document.getElementById("userId").value = u["ID"] || "";
+            document.getElementById("userNameInput").value = u["使用者"] || "";
+            document.getElementById("userPwdInput").value = u["登錄密碼"] || "";
+            document.getElementById("permAdd").checked = (u["新增"] === "Y");
+            document.getElementById("permEdit").checked = (u["編輯"] === "Y");
+            document.getElementById("permDel").checked = (u["刪除"] === "Y");
+
+            document.getElementById("userFormTitle").innerText = `修改使用者帳號 (${u["使用者"]})`;
+            document.getElementById("saveUserBtn").innerText = "確認修改";
+            document.getElementById("cancelUserEditBtn").classList.remove("hidden");
+        }
+
+        function resetUserForm() {
+            document.getElementById("userForm").reset();
+            document.getElementById("userId").value = "";
+            document.getElementById("userFormTitle").innerText = "新增使用者帳號";
+            document.getElementById("saveUserBtn").innerText = "儲存使用者";
+            document.getElementById("cancelUserEditBtn").classList.add("hidden");
+        }
+
+        async function submitUserForm(e) {
+            e.preventDefault();
+            const idVal = document.getElementById("userId").value;
+            const dataObj = {
+                _action: idVal ? "updateUser" : "createUser",
+                ID: idVal || new Date().getTime().toString(),
+                使用者: document.getElementById("userNameInput").value,
+                登錄密碼: document.getElementById("userPwdInput").value,
+                新增: document.getElementById("permAdd").checked ? "Y" : "N",
+                編輯: document.getElementById("permEdit").checked ? "Y" : "N",
+                刪除: document.getElementById("permDel").checked ? "Y" : "N"
+            };
+
+            const btn = document.getElementById("saveUserBtn");
+            btn.disabled = true;
+            try {
+                let res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(dataObj) });
+                let result = await res.json();
+                if (result.status === "success") {
+                    alert("使用者權限儲存成功！");
+                    resetUserForm();
+                    loadUserList();
+                } else {
+                    alert("儲存失敗：" + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("伺服器連線異常");
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function deleteUser(id, name) {
+            if (!confirm(`確定要刪除使用者「${name}」嗎？`)) return;
+            try {
+                let res = await fetch(GAS_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ _action: "deleteUser", ID: id })
+                });
+                let result = await res.json();
+                if (result.status === "success") {
+                    alert("帳號已刪除");
+                    loadUserList();
+                } else {
+                    alert("刪除失敗：" + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("伺服器連線異常");
             }
         }
 
@@ -425,11 +604,7 @@
                 `;
             });
 
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
+            html += `</tbody></table></div>`;
 
             // 2. 手機版卡片檢視
             html += `<div class="sm:hidden grid grid-cols-1 gap-3.5">`;
@@ -446,10 +621,7 @@
                 }
 
                 let rawPhone = emp["聯絡電話"] || "";
-                let phoneHtml = "-";
-                if (rawPhone) {
-                    phoneHtml = `<a href="tel:${rawPhone}" class="text-blue-600 hover:underline font-mono text-lg font-bold">${rawPhone}</a>`;
-                }
+                let phoneHtml = rawPhone ? `<a href="tel:${rawPhone}" class="text-blue-600 hover:underline font-mono text-lg font-bold">${rawPhone}</a>` : "-";
 
                 html += `
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
@@ -487,7 +659,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="pt-2 border-t border-slate-100 flex justify-end">
                             <button onclick="showDetail(${originalIndex})" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-2 rounded-lg transition text-center">
                                 檢視完整檔案與編輯 ➔
@@ -508,21 +679,14 @@
             
             renderDetailFields(false);
             
-            // 依權限控制 Modal 內按鈕顯示
             const editBtn = document.getElementById("editBtn");
             const deleteBtn = document.getElementById("modalDeleteBtn");
 
-            if (currentUserPermissions.canEdit) {
-                editBtn.classList.remove("hidden");
-            } else {
-                editBtn.classList.add("hidden");
-            }
+            if (currentUserPermissions.canEdit) editBtn.classList.remove("hidden");
+            else editBtn.classList.add("hidden");
 
-            if (currentUserPermissions.canDelete) {
-                deleteBtn.classList.remove("hidden");
-            } else {
-                deleteBtn.classList.add("hidden");
-            }
+            if (currentUserPermissions.canDelete) deleteBtn.classList.remove("hidden");
+            else deleteBtn.classList.add("hidden");
 
             document.getElementById("saveEditBtn").classList.add("hidden");
             document.getElementById("detailModal").classList.remove("hidden");
@@ -535,27 +699,12 @@
                 if (isEdit) {
                     if (f.type === "select") {
                         const optionsHtml = f.options.map(opt => `<option value="${opt}" ${val === opt ? 'selected' : ''}>${opt}</option>`).join('');
-                        return `
-                            <div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                                <label class="block text-[11px] font-semibold text-slate-500 mb-1">${f.label}</label>
-                                <select name="${f.key}" class="w-full border border-slate-300 rounded p-1.5 text-sm">${optionsHtml}</select>
-                            </div>
-                        `;
+                        return `<div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-2.5 rounded-lg border border-slate-200"><label class="block text-[11px] font-semibold text-slate-500 mb-1">${f.label}</label><select name="${f.key}" class="w-full border border-slate-300 rounded p-1.5 text-sm">${optionsHtml}</select></div>`;
                     } else {
-                        return `
-                            <div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                                <label class="block text-[11px] font-semibold text-slate-500 mb-1">${f.label}</label>
-                                <input type="${f.type || 'text'}" name="${f.key}" value="${val}" class="w-full border border-slate-300 rounded p-1.5 text-sm">
-                            </div>
-                        `;
+                        return `<div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-2.5 rounded-lg border border-slate-200"><label class="block text-[11px] font-semibold text-slate-500 mb-1">${f.label}</label><input type="${f.type || 'text'}" name="${f.key}" value="${val}" class="w-full border border-slate-300 rounded p-1.5 text-sm"></div>`;
                     }
                 } else {
-                    return `
-                        <div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                            <span class="block text-[11px] font-semibold text-slate-400 mb-0.5">${f.label}</span>
-                            <span class="font-medium text-slate-800">${val || "無 / 未填寫"}</span>
-                        </div>
-                    `;
+                    return `<div class="${f.full ? 'sm:col-span-3' : ''} bg-slate-50 p-2.5 rounded-lg border border-slate-200"><span class="block text-[11px] font-semibold text-slate-400 mb-0.5">${f.label}</span><span class="font-medium text-slate-800">${val || "無 / 未填寫"}</span></div>`;
                 }
             }).join('');
         }
@@ -575,35 +724,24 @@
             dataObj["_action"] = "update"; 
 
             const saveBtn = document.getElementById("saveEditBtn");
-            const originalText = saveBtn.innerText;
             saveBtn.disabled = true;
             saveBtn.innerText = "儲存中...";
 
             try {
-                let res = await fetch(GAS_URL, {
-                    method: "POST",
-                    body: JSON.stringify(dataObj)
-                });
+                let res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(dataObj) });
                 let result = await res.json();
                 if (result.status === "success") {
-                    alert("員工資料已成功更新至 Google Sheets！");
+                    alert("員工資料已成功更新！");
                     closeModal();
                     fetchData();
-                } else {
-                    alert("更新失敗：" + result.message);
-                }
-            } catch (err) {
-                console.error(err);
-                alert("伺服器連線異常，請稍後再試。");
-            } finally {
-                saveBtn.disabled = false;
-                saveBtn.innerText = originalText;
-            }
+                } else { alert("更新失敗：" + result.message); }
+            } catch (err) { alert("伺服器連線異常"); }
+            finally { saveBtn.disabled = false; saveBtn.innerText = "儲存變更"; }
         }
 
         async function deleteEmployee() {
             if (!currentEditingEmp) return;
-            if (!confirm(`確定要刪除「${currentEditingEmp["姓名"]}」的完整人事記錄嗎？此動作無法復原。`)) return;
+            if (!confirm(`確定要刪除「${currentEditingEmp["姓名"]}」的完整人事記錄嗎？`)) return;
 
             try {
                 let res = await fetch(GAS_URL, {
@@ -620,13 +758,8 @@
                     alert("該員工資料已成功刪除！");
                     closeModal();
                     fetchData();
-                } else {
-                    alert("刪除失敗：" + result.message);
-                }
-            } catch (err) {
-                console.error(err);
-                alert("伺服器連線異常，請稍後再試。");
-            }
+                } else { alert("刪除失敗：" + result.message); }
+            } catch (err) { alert("伺服器連線異常"); }
         }
 
         function closeModal() { document.getElementById("detailModal").classList.add("hidden"); }
@@ -646,27 +779,16 @@
             btn.innerText = "寫入中...";
 
             try {
-                let res = await fetch(GAS (GAS_URL)); // 若需調整請維持 fetch(GAS_URL, ...)
-                let resFetch = await fetch(GAS_URL, {
-                    method: "POST",
-                    body: JSON.stringify(dataObj)
-                });
-                let result = await resFetch.json();
+                let res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(dataObj) });
+                let result = await res.json();
                 if (result.status === "success") {
-                    alert("新員工資料已成功寫入 Google Sheets！");
+                    alert("新員工資料已成功寫入！");
                     closeAddModal();
                     form.reset();
                     fetchData();
-                } else {
-                    alert("寫入失敗：" + result.message);
-                }
-            } catch (err) {
-                console.error(err);
-                alert("伺服器連線異常，請稍後再試。");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "確認儲存";
-            }
+                } else { alert("寫入失敗：" + result.message); }
+            } catch (err) { alert("伺服器連線異常"); }
+            finally { btn.disabled = false; btn.innerText = "確認儲存"; }
         }
     </script>
 </body>
